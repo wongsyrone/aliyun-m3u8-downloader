@@ -51,12 +51,13 @@ to quickly create a Cobra application.`,
 		}
 		playInfo := sj.Get("PlayInfoList").Get("PlayInfo").GetIndex(len(playInfoList) - 1)
 		tool.PrintJson(playInfo)
+		title, _ := sj.Get("VideoBase").Get("Title").String()
 		serverRand, _ := playInfo.Get("Rand").String()
 		plaintext, _ := playInfo.Get("Plaintext").String()
 		playURL, _ := playInfo.Get("PlayURL").String()
 		tool.PrintJson(playURL)
 		key := tool.DecryptKey(clientRand, serverRand, plaintext)
-		downloader, err := download.NewTask(output, playURL, key)
+		downloader, err := download.NewTask(output, playURL, key, title)
 		if err != nil {
 			panic(err)
 		}

@@ -30,7 +30,7 @@ to quickly create a Cobra application.`,
 			panic("parameter 'chanSize' must be greater than 0")
 		}
 
-		downloader, err := download.NewTask(output, url, "")
+		downloader, err := download.NewTask(output, url, "", "")
 		if err != nil {
 			panic(err)
 		}
