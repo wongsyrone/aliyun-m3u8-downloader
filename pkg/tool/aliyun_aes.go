@@ -115,6 +115,9 @@ func Decrypt(key, iv []byte, text string) (string, error) {
 
 func unPad(ciphertext []byte) []byte {
 	length := len(ciphertext)
+	if length == 0 {
+		return ciphertext
+	}
 	//去掉最后一次的padding
 	unPadding := int(ciphertext[length-1])
 	return ciphertext[:(length - unPadding)]
