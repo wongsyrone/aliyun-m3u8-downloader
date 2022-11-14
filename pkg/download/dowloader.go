@@ -23,17 +23,14 @@ const (
 	progressWidth    = 40
 )
 
-var (
-	mergeTSFilename string
-)
-
 type Downloader struct {
-	lock     sync.Mutex
-	queue    []int
-	folder   string
-	tsFolder string
-	finish   int32
-	segLen   int
+	lock            sync.Mutex
+	queue           []int
+	folder          string
+	tsFolder        string
+	finish          int32
+	segLen          int
+	mergeTSFilename string
 
 	result *parse.Result
 }
@@ -41,11 +38,6 @@ type Downloader struct {
 // NewTask returns a Task instance
 func NewTask(output string, url string, aliKey, filename string) (*Downloader, error) {
 	result, err := parse.FromURL(url, aliKey)
-	if filename != "" {
-		mergeTSFilename = strings.TrimSuffix(filename, ".mp4") + ".mp4"
-	} else {
-		mergeTSFilename = tsFilename(url) + ".mp4"
-	}
 	if err != nil {
 		return nil, err
 	}
@@ -67,10 +59,19 @@ func NewTask(output string, url string, aliKey, filename string) (*Downloader, e
 	if err := os.MkdirAll(tsFolder, os.ModePerm); err != nil {
 		return nil, fmt.Errorf("create ts folder '[%s]' failed: %s", tsFolder, err.Error())
 	}
+
+	var mergeTSFilename string
+	if filename != "" {
+		mergeTSFilename = strings.TrimSuffix(filename, ".mp4") + ".mp4"
+	} else {
+		mergeTSFilename = tsFilename(url) + ".mp4"
+	}
+
 	d := &Downloader{
-		folder:   folder,
-		tsFolder: tsFolder,
-		result:   result,
+		folder:          folder,
+		tsFolder:        tsFolder,
+		result:          result,
+		mergeTSFilename: mergeTSFilename,
 	}
 	d.segLen = len(result.M3u8.Segments)
 	d.queue = genSlice(d.segLen)
@@ -216,7 +217,7 @@ func (d *Downloader) mergeHsToMp4() error {
 	}
 
 	// Create a TS file for merging, all segment files will be written to this file.
-	mFilePath := filepath.Join(d.folder, mergeTSFilename)
+	mFilePath := filepath.Join(d.folder, d.mergeTSFilename)
 	mFile, err := os.Create(mFilePath)
 	if err != nil {
 		return fmt.Errorf("create main TS file failed：%s", err.Error())
