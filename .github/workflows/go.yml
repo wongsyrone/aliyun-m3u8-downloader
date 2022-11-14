@@ -23,3 +23,18 @@ jobs:
 
     - name: Test
       run: go test -v ./...
+
+    - name: set GOVERSION
+      run: echo "GOVERSION=$(go version | sed -r 's/go version go(.*)\ .*/\1/')" >> $GITHUB_ENV
+    - name: set AirVersion
+      run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+    - name: show version
+      run: echo ${{ env.GOVERSION }} ${{ env.VERSION }}
+
+    - name: run GoReleaser
+      uses: goreleaser/goreleaser-action@v2
+      with:
+        version: latest
+        args: release --rm-dist
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
