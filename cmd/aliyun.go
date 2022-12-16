@@ -2,12 +2,13 @@ package cmd
 
 import (
 	"fmt"
+	"log"
+
 	"github.com/google/uuid"
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/download"
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/request"
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/tool"
 	"github.com/spf13/cobra"
-	"log"
 )
 
 // aliyunCmd represents the aliyun command
@@ -15,13 +16,11 @@ var aliyunCmd = &cobra.Command{
 	Use:   "aliyun",
 	Short: "阿里云私有m3u8加密下载工具",
 	Long: `阿里云私有m3u8加密下载工具. 使用示例:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+aliyun-m3u8-downloader aliyun -p "WebPlayAuth" -v 视频id -o=/data/example --chanSize 1 -f 文件名`,
 	Run: func(cmd *cobra.Command, args []string) {
 		playAuth, _ := cmd.Flags().GetString("playAuth")
 		videoId, _ := cmd.Flags().GetString("videoId")
+		filename, _ := cmd.Flags().GetString("filename")
 		output, _ := cmd.Flags().GetString("output")
 		chanSize, _ := cmd.Flags().GetInt("chanSize")
 		if playAuth == "" {
@@ -36,33 +35,8 @@ to quickly create a Cobra application.`,
 		if chanSize <= 0 {
 			panic("parameter 'chanSize' must be greater than 0")
 		}
-		// 随机字符串
-		clientRand := uuid.NewString()
-		sj, err := request.GetVodPlayerInfo(clientRand, playAuth, videoId)
-		if err != nil {
+		if err := aliDownload(output, filename, chanSize, videoId, playAuth); err != nil {
 			log.Fatalln(err)
-			return
-		}
-		//tool.PrintJson(sj)
-		playInfoList, err := sj.Get("PlayInfoList").Get("PlayInfo").Array()
-		if err != nil {
-			log.Fatalln(err)
-			return
-		}
-		playInfo := sj.Get("PlayInfoList").Get("PlayInfo").GetIndex(len(playInfoList) - 1)
-		tool.PrintJson(playInfo)
-		title, _ := sj.Get("VideoBase").Get("Title").String()
-		serverRand, _ := playInfo.Get("Rand").String()
-		plaintext, _ := playInfo.Get("Plaintext").String()
-		playURL, _ := playInfo.Get("PlayURL").String()
-		tool.PrintJson(playURL)
-		key := tool.DecryptKey(clientRand, serverRand, plaintext)
-		downloader, err := download.NewTask(output, playURL, key, title)
-		if err != nil {
-			panic(err)
-		}
-		if err := downloader.Start(chanSize); err != nil {
-			panic(err)
 		}
 		fmt.Println("Done!")
 	},
@@ -84,8 +58,41 @@ func init() {
 	aliyunCmd.Flags().StringP("videoId", "v", "", "视频id")
 	aliyunCmd.Flags().StringP("output", "o", "", "下载保存位置")
 	aliyunCmd.Flags().IntP("chanSize", "c", 1, "下载并发数")
+	aliyunCmd.Flags().StringP("filename", "f", "", "保存文件名")
 	_ = aliyunCmd.MarkFlagRequired("playAuth")
 	_ = aliyunCmd.MarkFlagRequired("videoId")
 	_ = aliyunCmd.MarkFlagRequired("output")
 	_ = aliyunCmd.MarkFlagRequired("chanSize")
+}
+
+func aliDownload(output, saveFilename string, chanSize int, videoId, playAuth string) error {
+	// 随机字符串
+	clientRand := uuid.NewString()
+	sj, err := request.GetVodPlayerInfo(clientRand, playAuth, videoId)
+	if err != nil {
+		return err
+	}
+	//tool.PrintJson(sj)
+	playInfoList, err := sj.Get("PlayInfoList").Get("PlayInfo").Array()
+	if err != nil {
+		return err
+	}
+	playInfo := sj.Get("PlayInfoList").Get("PlayInfo").GetIndex(len(playInfoList) - 1)
+	tool.PrintJson(playInfo)
+	if saveFilename == "" {
+		saveFilename, _ = sj.Get("VideoBase").Get("Title").String()
+	}
+	serverRand, _ := playInfo.Get("Rand").String()
+	plaintext, _ := playInfo.Get("Plaintext").String()
+	playURL, _ := playInfo.Get("PlayURL").String()
+	tool.PrintJson(playURL)
+	key := tool.DecryptKey(clientRand, serverRand, plaintext)
+	downloader, err := download.NewTask(output, playURL, key, saveFilename)
+	if err != nil {
+		panic(err)
+	}
+	if err := downloader.Start(chanSize); err != nil {
+		panic(err)
+	}
+	return nil
 }
