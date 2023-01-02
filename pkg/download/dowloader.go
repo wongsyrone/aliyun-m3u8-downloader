@@ -3,7 +3,6 @@ package download
 import (
 	"bufio"
 	"fmt"
-	"github.com/ddliu/go-httpclient"
 	"io/ioutil"
 	"os"
 	"path"
@@ -12,6 +11,7 @@ import (
 	"sync"
 	"sync/atomic"
 
+	"github.com/ddliu/go-httpclient"
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/parse"
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/parse/aliyun"
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/tool"
@@ -33,47 +33,75 @@ type Downloader struct {
 	mergeTSFilename string
 
 	result *parse.Result
+
+	output   string
+	filename string
+	aliKey   string
 }
 
-// NewTask returns a Task instance
-func NewTask(output string, url string, aliKey, filename string) (*Downloader, error) {
-	result, err := parse.FromURL(url, aliKey)
-	if err != nil {
-		return nil, err
+type DownloaderOption func(*Downloader)
+
+func WithOutput(output string) DownloaderOption {
+	return func(d *Downloader) {
+		d.output = output
 	}
-	var folder string
+}
+
+func WithAliKey(aliKey string) DownloaderOption {
+	return func(d *Downloader) {
+		d.aliKey = aliKey
+	}
+}
+
+func WithFilename(filename string) DownloaderOption {
+	return func(d *Downloader) {
+		d.filename = filename
+	}
+}
+
+// NewDownloader returns a Task instance
+func NewDownloader(url string, opts ...DownloaderOption) (*Downloader, error) {
+	d := &Downloader{}
+	for _, opt := range opts {
+		opt(d)
+	}
+
+	// 处理保存目录
+	d.folder = d.output
 	// If no output folder specified, use current directory
-	if output == "" {
+	if d.output == "" {
 		current, err := tool.CurrentDir()
 		if err != nil {
 			return nil, err
 		}
-		folder = filepath.Join(current, output)
-	} else {
-		folder = output
+		d.folder = current
 	}
-	if err := os.MkdirAll(folder, os.ModePerm); err != nil {
+	// 创建保存目录
+	if err := os.MkdirAll(d.folder, os.ModePerm); err != nil {
 		return nil, fmt.Errorf("create storage folder failed: %s", err.Error())
 	}
-	tsFolder := filepath.Join(folder, tsFolderName)
-	if err := os.MkdirAll(tsFolder, os.ModePerm); err != nil {
-		return nil, fmt.Errorf("create ts folder '[%s]' failed: %s", tsFolder, err.Error())
+
+	// 构造ts文件目录
+	d.tsFolder = filepath.Join(d.folder, tsFolderName)
+	// 创建ts文件目录
+	if err := os.MkdirAll(d.tsFolder, os.ModePerm); err != nil {
+		return nil, fmt.Errorf("create ts folder '[%s]' failed: %s", d.tsFolder, err.Error())
 	}
 
-	var mergeTSFilename string
-	if filename != "" {
-		mergeTSFilename = strings.TrimSuffix(filename, ".mp4") + ".mp4"
+	// 解析合并的最终文件名
+	if d.filename != "" {
+		d.mergeTSFilename = strings.TrimSuffix(d.filename, ".mp4") + ".mp4"
 	} else {
-		mergeTSFilename = tsFilename(url) + ".mp4"
+		d.mergeTSFilename = tsFilename(url) + ".mp4"
 	}
 
-	d := &Downloader{
-		folder:          folder,
-		tsFolder:        tsFolder,
-		result:          result,
-		mergeTSFilename: mergeTSFilename,
+	// 解析m3u8文件内容
+	var err error
+	d.result, err = parse.FromURL(url, d.aliKey)
+	if err != nil {
+		return nil, err
 	}
-	d.segLen = len(result.M3u8.Segments)
+	d.segLen = len(d.result.M3u8.Segments)
 	d.queue = genSlice(d.segLen)
 	return d, nil
 }
