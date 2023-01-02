@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/parse/aliyun"
+	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/download"
 
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/tool"
 	"github.com/spf13/cobra"
@@ -34,7 +34,7 @@ aliyun-m3u8-downloader aliyun -p "WebPlayAuth" -v 视频id -o=/data/example --ch
 		if chanSize <= 0 {
 			panic("parameter 'chanSize' must be greater than 0")
 		}
-		if err := aliyun.Download(output, filename, chanSize, videoId, playAuth); err != nil {
+		if err := download.AliyunDownload(output, filename, chanSize, videoId, playAuth); err != nil {
 			log.Fatalln(err)
 		}
 		fmt.Println("Done!")

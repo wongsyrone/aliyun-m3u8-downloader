@@ -1,13 +1,12 @@
-package aliyun
+package download
 
 import (
 	"github.com/google/uuid"
-	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/download"
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/request"
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/tool"
 )
 
-func Download(output, saveFilename string, chanSize int, videoId, playAuth string) error {
+func AliyunDownload(output, saveFilename string, chanSize int, videoId, playAuth string) error {
 	// 随机字符串
 	clientRand := uuid.NewString()
 	sj, err := request.GetVodPlayerInfo(clientRand, playAuth, videoId)
@@ -29,7 +28,7 @@ func Download(output, saveFilename string, chanSize int, videoId, playAuth strin
 	playURL, _ := playInfo.Get("PlayURL").String()
 	tool.PrintJson(playURL)
 	key := tool.DecryptKey(clientRand, serverRand, plaintext)
-	downloader, err := download.NewDownloader(playURL, download.WithOutput(output), download.WithAliKey(key), download.WithFilename(saveFilename))
+	downloader, err := NewDownloader(playURL, WithOutput(output), WithAliKey(key), WithFilename(saveFilename))
 	if err != nil {
 		panic(err)
 	}
