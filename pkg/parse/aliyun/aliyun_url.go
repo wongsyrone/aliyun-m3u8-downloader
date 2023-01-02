@@ -4,13 +4,14 @@ import (
 	"crypto/hmac"
 	"crypto/sha1"
 	"encoding/base64"
-	"github.com/bitly/go-simplejson"
-	"github.com/google/uuid"
 	"log"
 	"net/url"
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/bitly/go-simplejson"
+	"github.com/google/uuid"
 )
 
 var (
@@ -18,6 +19,7 @@ var (
 	PlayAuthSign2 = []int{90, 91}
 )
 
+// GetPlayInfoRequestUrl 获取阿里云视频信息
 func GetPlayInfoRequestUrl(rand, playAuth, videoId, formats string) (string, error) {
 	playAuth = decodePlayAuth(playAuth)
 	sj, err := simplejson.NewJson([]byte(playAuth))
@@ -34,6 +36,7 @@ func GetPlayInfoRequestUrl(rand, playAuth, videoId, formats string) (string, err
 	publicParams["SignatureNonce"] = uuid.NewString()
 	publicParams["Format"] = "JSON"
 	publicParams["Channel"] = "HTML5"
+	// StreamType=audio 可以下载阿里云私有加密m3u8返回的音频文件
 	publicParams["StreamType"] = "video"
 	if len(rand) > 0 {
 		publicParams["Rand"] = rand
