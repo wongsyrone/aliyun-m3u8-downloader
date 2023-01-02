@@ -28,7 +28,7 @@ aliyun-m3u8-downloader normal -u=https://www.lbbniu.com/index.m3u8 -o=/data/exam
 			panic("parameter 'chanSize' must be greater than 0")
 		}
 
-		downloader, err := download.NewTask(output, url, "", "")
+		downloader, err := download.NewDownloader(url, download.WithOutput(output))
 		if err != nil {
 			panic(err)
 		}
