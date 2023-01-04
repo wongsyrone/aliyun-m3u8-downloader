@@ -1,11 +1,12 @@
 package request
 
 import (
+	"log"
+
 	"github.com/bitly/go-simplejson"
 	"github.com/ddliu/go-httpclient"
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/parse/aliyun"
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/tool"
-	"log"
 )
 
 func init() {
@@ -19,13 +20,13 @@ func init() {
 	})
 }
 
-func GetVodPlayerInfo(rand, playAuth, fileId string) (*simplejson.Json, error) {
+func GetVodPlayerInfo(rand, playAuth, fileId string, opts ...aliyun.OptionFunc) (*simplejson.Json, error) {
 	rand, _ = tool.EncryptRand([]byte(rand))
-	return getVodPlayerInfo(rand, playAuth, fileId, "")
+	return getVodPlayerInfo(rand, playAuth, fileId, opts...)
 }
 
-func getVodPlayerInfo(rand, playAuth, fileId, formats string) (*simplejson.Json, error) {
-	playInfoRequestUrl, err := aliyun.GetPlayInfoRequestUrl(rand, playAuth, fileId, formats)
+func getVodPlayerInfo(rand, playAuth, fileId string, opts ...aliyun.OptionFunc) (*simplejson.Json, error) {
+	playInfoRequestUrl, err := aliyun.GetPlayInfoRequestUrl(rand, playAuth, fileId, opts...)
 	if err != nil {
 		log.Println(err)
 		return nil, err
