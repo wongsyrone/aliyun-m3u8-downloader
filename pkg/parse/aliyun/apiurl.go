@@ -4,13 +4,14 @@ import (
 	"crypto/hmac"
 	"crypto/sha1"
 	"encoding/base64"
-	"github.com/bitly/go-simplejson"
-	"github.com/google/uuid"
 	"log"
 	"net/url"
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/bitly/go-simplejson"
+	"github.com/google/uuid"
 )
 
 var (
@@ -18,7 +19,30 @@ var (
 	PlayAuthSign2 = []int{90, 91}
 )
 
-func GetPlayInfoRequestUrl(rand, playAuth, videoId, formats string) (string, error) {
+type OptionFunc func(opt *Option)
+
+type Option struct {
+	streamType string
+	formats    string
+}
+
+func WithStreamType(streamType string) OptionFunc {
+	return func(opt *Option) {
+		opt.streamType = streamType
+	}
+}
+func WithFormats(formats string) OptionFunc {
+	return func(opt *Option) {
+		opt.formats = formats
+	}
+}
+
+// GetPlayInfoRequestUrl 获取阿里云视频信息
+func GetPlayInfoRequestUrl(rand, playAuth, videoId string, opts ...OptionFunc) (string, error) {
+	opt := &Option{streamType: "video"}
+	for _, fn := range opts {
+		fn(opt)
+	}
 	playAuth = decodePlayAuth(playAuth)
 	sj, err := simplejson.NewJson([]byte(playAuth))
 	if err != nil {
@@ -34,14 +58,12 @@ func GetPlayInfoRequestUrl(rand, playAuth, videoId, formats string) (string, err
 	publicParams["SignatureNonce"] = uuid.NewString()
 	publicParams["Format"] = "JSON"
 	publicParams["Channel"] = "HTML5"
-	publicParams["StreamType"] = "video"
+	// StreamType=audio 可以下载阿里云私有加密m3u8返回的音频文件
+	publicParams["StreamType"] = opt.streamType
 	if len(rand) > 0 {
 		publicParams["Rand"] = rand
 	}
-	publicParams["Formats"] = ""
-	if len(formats) > 0 {
-		publicParams["Formats"] = formats
-	}
+	publicParams["Formats"] = opt.formats
 	publicParams["Version"] = "2017-03-21"
 	// 私有参数
 	privateParams := map[string]string{}
