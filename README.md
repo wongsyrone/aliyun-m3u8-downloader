@@ -21,6 +21,10 @@ aliyun-m3u8-downloader 是一个使用了 Go 语言编写的迷你 M3U8 下载�
 ### 源码方式
 
 ```bash
+# 交叉编译
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" -o m3u8-downloader
+CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags "-s -w" -o m3u8-downloader
+CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -o m3u8-downloader.exe
 # 普通m3u8下载
 go run main.go normal -u=https://www.lbbniu.com/index.m3u8 -o=/data/example --chanSize 1
 # 阿里云m3u8私有加密
