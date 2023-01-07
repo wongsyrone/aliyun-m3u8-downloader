@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/ddliu/go-httpclient"
 	"log"
 
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/download"
@@ -16,6 +17,13 @@ var aliyunCmd = &cobra.Command{
 	Short: "阿里云私有m3u8加密下载工具",
 	Long: `阿里云私有m3u8加密下载工具. 使用示例:
 aliyun-m3u8-downloader aliyun -p "WebPlayAuth" -v 视频id -o=/data/example --chanSize 1 -f 文件名`,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		if referer, _ := cmd.Flags().GetString("referer"); referer != "" {
+			httpclient.Defaults(httpclient.Map{
+				httpclient.OPT_REFERER: referer,
+			})
+		}
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		playAuth, _ := cmd.Flags().GetString("playAuth")
 		videoId, _ := cmd.Flags().GetString("videoId")
@@ -55,11 +63,11 @@ func init() {
 	// aliyunCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	aliyunCmd.Flags().StringP("playAuth", "p", "", "web播放认证信息")
 	aliyunCmd.Flags().StringP("videoId", "v", "", "视频id")
+	aliyunCmd.Flags().StringP("referer", "r", "", "referer请求头")
 	aliyunCmd.Flags().StringP("output", "o", "", "下载保存位置")
 	aliyunCmd.Flags().IntP("chanSize", "c", 1, "下载并发数")
 	aliyunCmd.Flags().StringP("filename", "f", "", "保存文件名")
 	_ = aliyunCmd.MarkFlagRequired("playAuth")
 	_ = aliyunCmd.MarkFlagRequired("videoId")
 	_ = aliyunCmd.MarkFlagRequired("output")
-	_ = aliyunCmd.MarkFlagRequired("chanSize")
 }
