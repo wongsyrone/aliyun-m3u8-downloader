@@ -2,8 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/ddliu/go-httpclient"
 	"log"
+
+	"github.com/ddliu/go-httpclient"
 
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/download"
 
@@ -36,9 +37,6 @@ aliyun-m3u8-downloader aliyun -p "WebPlayAuth" -v 视频id -o=/data/example --ch
 		if videoId == "" {
 			tool.PanicParameter("videoId")
 		}
-		if output == "" {
-			tool.PanicParameter("output")
-		}
 		if chanSize <= 0 {
 			panic("parameter 'chanSize' must be greater than 0")
 		}
@@ -69,5 +67,4 @@ func init() {
 	aliyunCmd.Flags().StringP("filename", "f", "", "保存文件名")
 	_ = aliyunCmd.MarkFlagRequired("playAuth")
 	_ = aliyunCmd.MarkFlagRequired("videoId")
-	_ = aliyunCmd.MarkFlagRequired("output")
 }

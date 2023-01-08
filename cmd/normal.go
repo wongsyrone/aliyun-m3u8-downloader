@@ -21,9 +21,6 @@ aliyun-m3u8-downloader normal -u=https://www.lbbniu.com/index.m3u8 -o=/data/exam
 		if url == "" {
 			tool.PanicParameter("url")
 		}
-		if output == "" {
-			tool.PanicParameter("output")
-		}
 		if chanSize <= 0 {
 			panic("parameter 'chanSize' must be greater than 0")
 		}
@@ -55,6 +52,4 @@ func init() {
 	normalCmd.Flags().StringP("output", "o", "", "下载保存位置")
 	normalCmd.Flags().IntP("chanSize", "c", 1, "下载并发数")
 	_ = normalCmd.MarkFlagRequired("url")
-	_ = normalCmd.MarkFlagRequired("output")
-	_ = normalCmd.MarkFlagRequired("chanSize")
 }
