@@ -17,6 +17,7 @@
 # vendor/
 
 .idea
+.DS_Store
 m3u8
 /test
 output
