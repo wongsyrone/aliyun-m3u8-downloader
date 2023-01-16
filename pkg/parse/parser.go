@@ -3,9 +3,10 @@ package parse
 import (
 	"errors"
 	"fmt"
+	"net/url"
+
 	"github.com/ddliu/go-httpclient"
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/tool"
-	"net/url"
 )
 
 type Result struct {
@@ -50,7 +51,7 @@ func FromURL(link string, aliKey string) (*Result, error) {
 			// Request URL to extract decryption key
 			keyURL := key.URI
 			keyURL = tool.ResolveURL(u, keyURL)
-			resp, err := httpclient.Get(keyURL)
+			resp, err = httpclient.Get(keyURL)
 			if err != nil {
 				return nil, fmt.Errorf("extract key failed: %s", err.Error())
 			}
