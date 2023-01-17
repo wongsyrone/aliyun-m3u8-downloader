@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
-	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/tool"
 	"log"
+
+	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/tool"
 )
 
 const (

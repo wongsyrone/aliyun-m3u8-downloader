@@ -6,6 +6,10 @@ import (
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/tool"
 )
 
+const (
+	AliyunVoDEncryption = "AliyunVoDEncryption"
+)
+
 func AliyunDownload(output, saveFilename string, chanSize int, videoId, playAuth string) error {
 	// 随机字符串
 	clientRand := uuid.NewString()
@@ -23,16 +27,20 @@ func AliyunDownload(output, saveFilename string, chanSize int, videoId, playAuth
 	if saveFilename == "" {
 		saveFilename, _ = sj.Get("VideoBase").Get("Title").String()
 	}
-	serverRand, _ := playInfo.Get("Rand").String()
-	plaintext, _ := playInfo.Get("Plaintext").String()
+	encryptType, _ := playInfo.Get("EncryptType").String()
 	playURL, _ := playInfo.Get("PlayURL").String()
 	tool.PrintJson(playURL)
-	key := tool.DecryptKey(clientRand, serverRand, plaintext)
+	var key string
+	if encryptType == AliyunVoDEncryption {
+		serverRand, _ := playInfo.Get("Rand").String()
+		plaintext, _ := playInfo.Get("Plaintext").String()
+		key = tool.DecryptKey(clientRand, serverRand, plaintext)
+	}
 	downloader, err := NewDownloader(playURL, WithOutput(output), WithAliKey(key), WithFilename(saveFilename))
 	if err != nil {
 		panic(err)
 	}
-	if err := downloader.Start(chanSize); err != nil {
+	if err = downloader.Start(chanSize); err != nil {
 		panic(err)
 	}
 	return nil

@@ -5,9 +5,7 @@ import (
 	"log"
 
 	"github.com/ddliu/go-httpclient"
-
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/download"
-
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/tool"
 	"github.com/spf13/cobra"
 )
