@@ -122,11 +122,11 @@ func (d *Downloader) Start(concurrency int) error {
 		wg.Add(1)
 		go func(idx int) {
 			defer wg.Done()
-			if err := d.download(idx); err != nil {
+			if er := d.download(idx); er != nil {
 				// Back into the queue, retry request
-				fmt.Printf("[failed] %s\n", err.Error())
-				if err := d.back(idx); err != nil {
-					fmt.Printf(err.Error())
+				fmt.Printf("[failed] %v\n", er)
+				if er = d.back(idx); er != nil {
+					fmt.Println(er)
 				}
 			}
 			<-limitChan
