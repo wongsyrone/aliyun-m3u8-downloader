@@ -10,4 +10,5 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/kr/pretty v0.3.0 // indirect
 	github.com/spf13/cobra v1.3.0
+	github.com/stretchr/testify v1.7.0
 )

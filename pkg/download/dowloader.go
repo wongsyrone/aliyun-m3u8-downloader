@@ -36,7 +36,7 @@ type Downloader struct {
 
 	output   string
 	filename string
-	aliKey   string
+	key      string
 }
 
 type DownloaderOption func(*Downloader)
@@ -47,9 +47,9 @@ func WithOutput(output string) DownloaderOption {
 	}
 }
 
-func WithAliKey(aliKey string) DownloaderOption {
+func WithKey(key string) DownloaderOption {
 	return func(d *Downloader) {
-		d.aliKey = aliKey
+		d.key = key
 	}
 }
 
@@ -97,7 +97,7 @@ func NewDownloader(url string, opts ...DownloaderOption) (*Downloader, error) {
 
 	// 解析m3u8文件内容
 	var err error
-	d.result, err = parse.FromURL(url, d.aliKey)
+	d.result, err = parse.FromURL(url, d.key)
 	if err != nil {
 		return nil, err
 	}
@@ -122,11 +122,11 @@ func (d *Downloader) Start(concurrency int) error {
 		wg.Add(1)
 		go func(idx int) {
 			defer wg.Done()
-			if err := d.download(idx); err != nil {
+			if er := d.download(idx); er != nil {
 				// Back into the queue, retry request
-				fmt.Printf("[failed] %s\n", err.Error())
-				if err := d.back(idx); err != nil {
-					fmt.Printf(err.Error())
+				fmt.Printf("[failed] %v\n", er)
+				if er = d.back(idx); er != nil {
+					fmt.Println(er)
 				}
 			}
 			<-limitChan

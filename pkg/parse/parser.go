@@ -14,7 +14,7 @@ type Result struct {
 	M3u8 *M3u8
 }
 
-func FromURL(link string, aliKey string) (*Result, error) {
+func FromURL(link string, key string) (*Result, error) {
 	u, err := url.Parse(link)
 	if err != nil {
 		return nil, err
@@ -31,7 +31,7 @@ func FromURL(link string, aliKey string) (*Result, error) {
 	}
 	if len(m3u8.MasterPlaylist) != 0 {
 		sf := m3u8.MasterPlaylist[0]
-		return FromURL(tool.ResolveURL(u, sf.URI), aliKey)
+		return FromURL(tool.ResolveURL(u, sf.URI), key)
 	}
 	if len(m3u8.Segments) == 0 {
 		return nil, errors.New("can not found any TS file description")
@@ -40,29 +40,33 @@ func FromURL(link string, aliKey string) (*Result, error) {
 		URL:  u,
 		M3u8: m3u8,
 	}
-
-	for idx, key := range m3u8.Keys {
+	for idx, k := range m3u8.Keys {
 		switch {
-		case key.Method == "" || key.Method == CryptMethodNONE:
+		case k.Method == "" || k.Method == CryptMethodNONE:
 			continue
-		case key.AliyunVoDEncryption && key.Method == CryptMethodAES:
-			m3u8.Keys[idx].Key = aliKey
-		case !key.AliyunVoDEncryption && key.Method == CryptMethodAES:
+		case k.AliyunVoDEncryption && k.Method == CryptMethodAES:
+			m3u8.Keys[idx].Key = key
+		case !k.AliyunVoDEncryption && k.Method == CryptMethodAES:
+			// 已知 key 值，直接赋值
+			if key != "" {
+				m3u8.Keys[idx].Key = key
+				m3u8.Keys[idx].IV = "" // TODO: 要不要重置为空
+				continue
+			}
 			// Request URL to extract decryption key
-			keyURL := key.URI
-			keyURL = tool.ResolveURL(u, keyURL)
+			keyURL := tool.ResolveURL(u, k.URI)
 			resp, err = httpclient.Get(keyURL)
 			if err != nil {
 				return nil, fmt.Errorf("extract key failed: %s", err.Error())
 			}
-			keyStr, err := resp.ToString()
-			if err != nil {
+			if keyStr, err := resp.ToString(); err != nil {
 				return nil, err
+			} else {
+				// fmt.Println("decryption key: ", keyStr)
+				m3u8.Keys[idx].Key = keyStr
 			}
-			fmt.Println("decryption key: ", keyStr)
-			m3u8.Keys[idx].Key = keyStr
 		default:
-			return nil, fmt.Errorf("unknown or unsupported cryption method: %s", key.Method)
+			return nil, fmt.Errorf("unknown or unsupported cryption method: %s", k.Method)
 		}
 	}
 	return result, nil
