@@ -10,7 +10,7 @@ const (
 	AliyunVoDEncryption = "AliyunVoDEncryption"
 )
 
-func AliyunDownload(output, saveFilename string, chanSize int, videoId, playAuth string) error {
+func Aliyun(output, saveFilename string, chanSize int, videoId, playAuth string) error {
 	// 随机字符串
 	clientRand := uuid.NewString()
 	sj, err := request.GetVodPlayerInfo(clientRand, playAuth, videoId)
@@ -36,7 +36,7 @@ func AliyunDownload(output, saveFilename string, chanSize int, videoId, playAuth
 		plaintext, _ := playInfo.Get("Plaintext").String()
 		key = tool.DecryptKey(clientRand, serverRand, plaintext)
 	}
-	downloader, err := NewDownloader(playURL, WithOutput(output), WithAliKey(key), WithFilename(saveFilename))
+	downloader, err := NewDownloader(playURL, WithOutput(output), WithKey(key), WithFilename(saveFilename))
 	if err != nil {
 		panic(err)
 	}

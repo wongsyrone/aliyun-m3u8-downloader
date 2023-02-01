@@ -36,7 +36,7 @@ type Downloader struct {
 
 	output   string
 	filename string
-	aliKey   string
+	key      string
 }
 
 type DownloaderOption func(*Downloader)
@@ -47,9 +47,9 @@ func WithOutput(output string) DownloaderOption {
 	}
 }
 
-func WithAliKey(aliKey string) DownloaderOption {
+func WithKey(key string) DownloaderOption {
 	return func(d *Downloader) {
-		d.aliKey = aliKey
+		d.key = key
 	}
 }
 
@@ -97,7 +97,7 @@ func NewDownloader(url string, opts ...DownloaderOption) (*Downloader, error) {
 
 	// 解析m3u8文件内容
 	var err error
-	d.result, err = parse.FromURL(url, d.aliKey)
+	d.result, err = parse.FromURL(url, d.key)
 	if err != nil {
 		return nil, err
 	}

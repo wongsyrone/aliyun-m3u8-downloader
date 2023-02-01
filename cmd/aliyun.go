@@ -38,7 +38,7 @@ aliyun-m3u8-downloader aliyun -p "WebPlayAuth" -v 视频id -o=/data/example --ch
 		if chanSize <= 0 {
 			panic("parameter 'chanSize' must be greater than 0")
 		}
-		if err := download.AliyunDownload(output, filename, chanSize, videoId, playAuth); err != nil {
+		if err := download.Aliyun(output, filename, chanSize, videoId, playAuth); err != nil {
 			log.Fatalln(err)
 		}
 		fmt.Println("Done!")
