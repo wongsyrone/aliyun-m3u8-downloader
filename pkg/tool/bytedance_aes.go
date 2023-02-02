@@ -34,3 +34,67 @@ func FastAesKey(data string) (string, error) {
 	encData := ds[1]
 	return byteDanceDecrypt([]byte(key), []byte(iv), encData)
 }
+
+// PlayAuthDecrypt 火山引擎视频云 playAuth 解密
+// 参考地址：https://www.52pojie.cn/thread-1726219-1-1.html
+func PlayAuthDecrypt(playAuth string) string {
+	a1, _ := base64.StdEncoding.DecodeString(playAuth)
+	a2 := len(a1)
+	var v6, v7, v8, v9, v10, v11 int
+	v6 = 0
+	v7 = 0
+	v8 = 0
+	v9 = 0
+	v10 = 0
+	v11 = 0
+
+	if a2 >= 3 {
+		v6 = 1
+		v7 = int(a1[0] ^ a1[1] ^ a1[2])
+		v9 = a2 - v7
+		v11 = v9 + 47
+		if v7-48 < 1 {
+			v10 = 1
+		}
+		if v11 < 1 {
+			v8 = 1
+		}
+	}
+	if v8|v10 == 0 {
+		v12 := make([]byte, v11)
+		v13 := v7 - 47
+		for i := 0; i < v13; i++ {
+		}
+		for i := 0; i < v11; i++ {
+			v12[i] = a1[i+v6]
+		}
+		v15 := 0
+		v16 := -6
+		v17 := byte(85)
+		for v15 != v11 {
+			v18 := v12[v15]
+			v19 := 0
+			v20 := v15
+			v21 := v18
+			if v15&1 == 0 {
+				v21 = v17
+			}
+			for v20 > 0 {
+				v19++
+				v20 &= v20 - 1
+			}
+			if v15&1 == 0 {
+				v17 = byte(v16)
+			}
+			v22 := (v18 ^ v17) - byte(v19)
+			v17 = v21
+			v12[v15] = byte(v22 - 21)
+			if v15&1 == 0 {
+				v16 = int(v18)
+			}
+			v15++
+		}
+		return string(v12[1 : v11-1])
+	}
+	return ""
+}
