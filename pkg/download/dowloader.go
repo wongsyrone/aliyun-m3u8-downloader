@@ -170,6 +170,7 @@ func (d *Downloader) downloadMp4(mp4Url string) error {
 	}
 	//noinspection GoUnhandledErrorResult
 	defer mFile.Close()
+	defer resp.Body.Close()
 	_, err = io.Copy(mFile, resp.Body)
 	if err != nil {
 		return fmt.Errorf("write mp4 file failed：%w", err)
