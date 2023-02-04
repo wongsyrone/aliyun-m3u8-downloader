@@ -2,7 +2,7 @@ package download
 
 import (
 	"github.com/google/uuid"
-	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/request"
+	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/request/aliyun"
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/tool"
 )
 
@@ -13,7 +13,7 @@ const (
 func Aliyun(output, saveFilename string, chanSize int, videoId, playAuth string) error {
 	// 随机字符串
 	clientRand := uuid.NewString()
-	sj, err := request.GetVodPlayerInfo(clientRand, playAuth, videoId)
+	sj, err := aliyun.GetVodPlayerInfo(clientRand, playAuth, videoId)
 	if err != nil {
 		return err
 	}

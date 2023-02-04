@@ -24,8 +24,9 @@ func byteDanceDecrypt(key, iv []byte, text string) (string, error) {
 }
 
 // FastAesKey 更加keyToken获取加密key然后解密
-// https://api.juejin.cn/user_api/v1/video/key_token?aid=2608&uuid=6898099958165407246&spider=0
 // https://kds.bytedance.com/kds/api/v3/keys?source=jarvis&ak=6320731a6c39fc14ab44e6c50102c65b&token=HMAC-SHA1%3A1.0%3A1675240485%3AAKLTNmEwYWEzZmJhMDE0NDUyYTk1MThiYTk2NjQ4MmY1ZTk%3Aoku5E9Q%2BQ6Tsf5DGJWjDSDxuy9U%3D&_=1675236886731
+// 上面地址中的token通过key_token接口获取
+// https://kds.bytedance.com/kds/api/v3/keys 改为 https://kds.bytedance.com/kds/api/v1/keys 后可以直接base64解密
 func FastAesKey(data string) (string, error) {
 	ds := strings.Split(data, ":")
 	kv := ds[0]

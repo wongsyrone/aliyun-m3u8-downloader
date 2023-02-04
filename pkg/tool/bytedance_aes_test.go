@@ -1,6 +1,7 @@
 package tool
 
 import (
+	"encoding/hex"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -79,4 +80,10 @@ func TestPlayAuthDecrypt(t *testing.T) {
 			assert.Equal(t, tc.wantDecryptKey, fastAesKey)
 		})
 	}
+}
+
+func TestHex(t *testing.T) {
+	data, err := hex.DecodeString("F8E775DC3F1E42A7A371A82514EFE03E")
+	assert.NoError(t, err)
+	assert.NotEmpty(t, data)
 }

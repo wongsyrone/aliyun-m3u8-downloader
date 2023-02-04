@@ -3,6 +3,7 @@ package parse
 
 import (
 	"bufio"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"io"
@@ -218,6 +219,10 @@ func parse(reader io.Reader) (*M3u8, error) {
 			keyIndex++
 			key.Method = method
 			key.URI = params["URI"]
+			if strings.HasPrefix(params["IV"], "0x") {
+				iv, _ := hex.DecodeString(strings.TrimPrefix(params["IV"], "0x"))
+				params["IV"] = string(iv)
+			}
 			key.IV = params["IV"]
 			m3u8.Keys[keyIndex] = key
 		case line == "#EndList":
