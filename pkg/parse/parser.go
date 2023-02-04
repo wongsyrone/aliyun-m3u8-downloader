@@ -50,7 +50,6 @@ func FromURL(link string, key string) (*Result, error) {
 			// 已知 key 值，直接赋值
 			if key != "" {
 				m3u8.Keys[idx].Key = key
-				m3u8.Keys[idx].IV = "" // TODO: 要不要重置为空
 				continue
 			}
 			// Request URL to extract decryption key

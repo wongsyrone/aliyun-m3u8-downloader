@@ -3,6 +3,7 @@ package download
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"path"
@@ -37,6 +38,9 @@ type Downloader struct {
 	output   string
 	filename string
 	key      string
+	// mp4 下载
+	mp4    bool
+	mp4Url string
 }
 
 type DownloaderOption func(*Downloader)
@@ -56,6 +60,12 @@ func WithKey(key string) DownloaderOption {
 func WithFilename(filename string) DownloaderOption {
 	return func(d *Downloader) {
 		d.filename = filename
+	}
+}
+
+func WithMp4(mp4 bool) DownloaderOption {
+	return func(d *Downloader) {
+		d.mp4 = mp4
 	}
 }
 
@@ -81,13 +91,6 @@ func NewDownloader(url string, opts ...DownloaderOption) (*Downloader, error) {
 		return nil, fmt.Errorf("create storage folder failed: %s", err.Error())
 	}
 
-	// 构造ts文件目录
-	d.tsFolder = filepath.Join(d.folder, tsFolderName)
-	// 创建ts文件目录
-	if err := os.MkdirAll(d.tsFolder, os.ModePerm); err != nil {
-		return nil, fmt.Errorf("create ts folder '[%s]' failed: %s", d.tsFolder, err.Error())
-	}
-
 	// 解析合并的最终文件名
 	if d.filename != "" {
 		d.mergeTSFilename = strings.TrimSuffix(d.filename, ".mp4") + ".mp4"
@@ -95,19 +98,33 @@ func NewDownloader(url string, opts ...DownloaderOption) (*Downloader, error) {
 		d.mergeTSFilename = tsFilename(url) + ".mp4"
 	}
 
-	// 解析m3u8文件内容
-	var err error
-	d.result, err = parse.FromURL(url, d.key)
-	if err != nil {
-		return nil, err
+	if d.mp4 {
+		d.mp4Url = url
+	} else {
+		// 构造ts文件目录
+		d.tsFolder = filepath.Join(d.folder, tsFolderName)
+		// 创建ts文件目录
+		if err := os.MkdirAll(d.tsFolder, os.ModePerm); err != nil {
+			return nil, fmt.Errorf("create ts folder '[%s]' failed: %s", d.tsFolder, err.Error())
+		}
+
+		// 解析m3u8文件内容
+		var err error
+		d.result, err = parse.FromURL(url, d.key)
+		if err != nil {
+			return nil, err
+		}
+		d.segLen = len(d.result.M3u8.Segments)
+		d.queue = genSlice(d.segLen)
 	}
-	d.segLen = len(d.result.M3u8.Segments)
-	d.queue = genSlice(d.segLen)
 	return d, nil
 }
 
 // Start runs downloader
 func (d *Downloader) Start(concurrency int) error {
+	if d.mp4 {
+		return d.downloadMp4(d.mp4Url)
+	}
 	var wg sync.WaitGroup
 	// struct{} zero size
 	limitChan := make(chan struct{}, concurrency)
@@ -136,6 +153,27 @@ func (d *Downloader) Start(concurrency int) error {
 	wg.Wait()
 	if err := d.mergeHsToMp4(); err != nil {
 		return err
+	}
+	return nil
+}
+
+func (d *Downloader) downloadMp4(mp4Url string) error {
+	resp, err := httpclient.Get(mp4Url)
+	if err != nil {
+		return fmt.Errorf("request %s, err: %w", mp4Url, err)
+	}
+	// Create a mp4 file
+	mFilePath := filepath.Join(d.folder, d.mergeTSFilename)
+	mFile, err := os.Create(mFilePath)
+	if err != nil {
+		return fmt.Errorf("create mp4 file failed：%w", err)
+	}
+	//noinspection GoUnhandledErrorResult
+	defer mFile.Close()
+	defer resp.Body.Close()
+	_, err = io.Copy(mFile, resp.Body)
+	if err != nil {
+		return fmt.Errorf("write mp4 file failed：%w", err)
 	}
 	return nil
 }
@@ -171,7 +209,7 @@ func (d *Downloader) download(segIndex int) error {
 		} else {
 			tsData, err = tool.AES128Decrypt(tsData, []byte(keyInfo.Key), []byte(keyInfo.IV))
 			if err != nil {
-				return fmt.Errorf("decryt: %s, %s", tsUrl, err.Error())
+				return fmt.Errorf("decryt: %s, err: %w", tsUrl, err)
 			}
 		}
 	}
