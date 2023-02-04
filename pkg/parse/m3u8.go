@@ -206,10 +206,10 @@ func parse(reader io.Reader) (*M3u8, error) {
 			if len(params) == 0 {
 				return nil, fmt.Errorf("invalid EXT-X-KEY: %s, line: %d", line, i+1)
 			}
-			meathod := CryptMethod(params["MEATHOD"]) // 阿里云
 			method := CryptMethod(params["METHOD"])
 			key = new(KeyInfo)
-			if meathod == CryptMethodAES {
+			// 阿里云
+			if meathod := CryptMethod(params["MEATHOD"]); meathod == CryptMethodAES {
 				method = meathod
 				key.AliyunVoDEncryption = true
 			}
@@ -220,7 +220,19 @@ func parse(reader io.Reader) (*M3u8, error) {
 			key.Method = method
 			key.URI = params["URI"]
 			if strings.HasPrefix(params["IV"], "0x") {
-				iv, _ := hex.DecodeString(strings.TrimPrefix(params["IV"], "0x"))
+				params["IV"] = strings.TrimPrefix(params["IV"], "0x")
+				iv, err := hex.DecodeString(params["IV"])
+				if err != nil {
+					return nil, err
+				}
+				// 百度智能云
+				if params["KEYFORMAT"] == "media-drm-token" || params["KEYFORMAT"] == "media-drm-player-binding" {
+					for k := 0; k < len(iv); k += 4 {
+						for start, end := k, k+3; start < end; start, end = start+1, end-1 {
+							iv[start], iv[end] = iv[end], iv[start]
+						}
+					}
+				}
 				params["IV"] = string(iv)
 			}
 			key.IV = params["IV"]
