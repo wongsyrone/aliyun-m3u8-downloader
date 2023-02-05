@@ -41,11 +41,13 @@ Linux 和 MacOS
 
 ```
 # 普通m3u8下载
-./aliyun-m3u8-downloader normal -u=https://www.lbbniu.com/index.m3u8 -o=/data/example --chanSize 1
+./aliyun-m3u8-downloader normal -u https://www.lbbniu.com/index.m3u8 -o=/data/example --chanSize 1
 # 阿里云m3u8私有加密
-./aliyun-m3u8-downloader aliyun -p "WebPlayAuth" -v 视频id -o=/data/example --chanSize 1
+./aliyun-m3u8-downloader aliyun -p "PlayAuth" -v 视频id -o=/data/example --chanSize 1
 # 火山引擎视频云视频下载
-./aliyun-m3u8-downloader bytedance -p "PlayAuthToken" -o=/data/example --chanSize 1
+./aliyun-m3u8-downloader bytedance -p "PlayAuthToken" -o=/data/example --chanSize 1# 火山引擎视频云视频下载
+# 百度智能云视频下载
+./aliyun-m3u8-downloader baidu -u m3u8视频地址 -t token  -o=/data/example --chanSize 1
 ```
 
 ## 下载
