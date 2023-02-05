@@ -5,6 +5,10 @@ import (
 	"encoding/hex"
 )
 
+const (
+	BaiduKey = "72Fhskjglp8qjpqx"
+)
+
 // BaiduDecrypt 百度智能云key解密
 // 参考： http://aqxbk.com/archives/security/securitysite/2021/08_02/62815.html
 func BaiduDecrypt(key, src string) (string, error) {

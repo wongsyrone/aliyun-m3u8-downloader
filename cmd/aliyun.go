@@ -61,8 +61,8 @@ func init() {
 	aliyunCmd.Flags().StringP("videoId", "v", "", "视频id")
 	aliyunCmd.Flags().StringP("referer", "r", "", "referer请求头")
 	aliyunCmd.Flags().StringP("output", "o", "", "下载保存位置")
-	aliyunCmd.Flags().IntP("chanSize", "c", 1, "下载并发数")
 	aliyunCmd.Flags().StringP("filename", "f", "", "保存文件名")
-	_ = aliyunCmd.MarkFlagRequired("playAuth")
+	aliyunCmd.Flags().IntP("chanSize", "c", 1, "下载并发数")
 	_ = aliyunCmd.MarkFlagRequired("videoId")
+	_ = aliyunCmd.MarkFlagRequired("playAuth")
 }

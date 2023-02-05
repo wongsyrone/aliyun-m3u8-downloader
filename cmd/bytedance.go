@@ -59,7 +59,7 @@ func init() {
 	bytedanceCmd.Flags().StringP("playAuth", "p", "", "web播放认证信息")
 	bytedanceCmd.Flags().StringP("referer", "r", "", "referer请求头")
 	bytedanceCmd.Flags().StringP("output", "o", "", "下载保存位置")
-	bytedanceCmd.Flags().IntP("chanSize", "c", 5, "下载并发数")
 	bytedanceCmd.Flags().StringP("filename", "f", "", "保存文件名")
+	bytedanceCmd.Flags().IntP("chanSize", "c", 5, "下载并发数")
 	_ = aliyunCmd.MarkFlagRequired("playAuth")
 }

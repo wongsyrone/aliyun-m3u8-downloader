@@ -35,9 +35,10 @@ type Downloader struct {
 
 	result *parse.Result
 
-	output   string
-	filename string
-	key      string
+	output      string
+	filename    string
+	key         string
+	loadKeyFunc parse.LoadKeyFunc
 	// mp4 下载
 	mp4    bool
 	mp4Url string
@@ -54,6 +55,15 @@ func WithOutput(output string) DownloaderOption {
 func WithKey(key string) DownloaderOption {
 	return func(d *Downloader) {
 		d.key = key
+		d.loadKeyFunc = func(_, _ string) (string, error) {
+			return d.key, nil
+		}
+	}
+}
+
+func WithLoadKeyFunc(loadKeyFunc parse.LoadKeyFunc) DownloaderOption {
+	return func(d *Downloader) {
+		d.loadKeyFunc = loadKeyFunc
 	}
 }
 
@@ -69,9 +79,24 @@ func WithMp4(mp4 bool) DownloaderOption {
 	}
 }
 
+func loadKeyFunc(_, keyUrl string) (string, error) {
+	resp, err := httpclient.Get(keyUrl)
+	if err != nil {
+		return "", fmt.Errorf("extract key failed: %w", err)
+	}
+	keyStr, err := resp.ToString()
+	if err != nil {
+		return "", err
+	}
+	//fmt.Println("decryption key: ", keyStr)
+	return keyStr, err
+}
+
 // NewDownloader returns a Task instance
 func NewDownloader(url string, opts ...DownloaderOption) (*Downloader, error) {
-	d := &Downloader{}
+	d := &Downloader{
+		loadKeyFunc: loadKeyFunc,
+	}
 	for _, opt := range opts {
 		opt(d)
 	}
@@ -110,7 +135,7 @@ func NewDownloader(url string, opts ...DownloaderOption) (*Downloader, error) {
 
 		// 解析m3u8文件内容
 		var err error
-		d.result, err = parse.FromURL(url, d.key)
+		d.result, err = parse.FromURL(url, d.loadKeyFunc)
 		if err != nil {
 			return nil, err
 		}
