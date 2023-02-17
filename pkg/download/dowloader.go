@@ -234,7 +234,7 @@ func (d *Downloader) download(segIndex int) error {
 		} else {
 			tsData, err = tool.AES128Decrypt(tsData, []byte(keyInfo.Key), []byte(keyInfo.IV))
 			if err != nil {
-				return fmt.Errorf("decryt: %s, err: %w", tsUrl, err)
+				return fmt.Errorf("decrypt: %s, err: %w", tsUrl, err)
 			}
 		}
 	}
