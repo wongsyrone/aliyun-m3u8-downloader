@@ -9,6 +9,7 @@ require (
 	github.com/ddliu/go-httpclient v0.6.9
 	github.com/google/uuid v1.3.0
 	github.com/kr/pretty v0.3.0 // indirect
+	github.com/robfig/cron/v3 v3.0.0 // indirect
 	github.com/spf13/cobra v1.3.0
 	github.com/stretchr/testify v1.7.0
 	github.com/wasmerio/wasmer-go v1.0.4
