@@ -42,6 +42,9 @@ type Downloader struct {
 	// mp4 下载
 	mp4    bool
 	mp4Url string
+
+	// m3u8Content
+	m3u8Content string
 }
 
 type DownloaderOption func(*Downloader)
@@ -76,6 +79,12 @@ func WithFilename(filename string) DownloaderOption {
 func WithMp4(mp4 bool) DownloaderOption {
 	return func(d *Downloader) {
 		d.mp4 = mp4
+	}
+}
+
+func WithM3u8Content(m3u8Content string) DownloaderOption {
+	return func(d *Downloader) {
+		d.m3u8Content = m3u8Content
 	}
 }
 
@@ -122,6 +131,9 @@ func NewDownloader(url string, opts ...DownloaderOption) (*Downloader, error) {
 	} else {
 		d.mergeTSFilename = tsFilename(url) + ".mp4"
 	}
+	if url == "" && d.m3u8Content == "" {
+		return nil, fmt.Errorf("url: %s and m3u8Content: %s", url, d.m3u8Content)
+	}
 
 	if d.mp4 {
 		d.mp4Url = url
@@ -135,7 +147,11 @@ func NewDownloader(url string, opts ...DownloaderOption) (*Downloader, error) {
 
 		// 解析m3u8文件内容
 		var err error
-		d.result, err = parse.FromURL(url, d.loadKeyFunc)
+		if url == "" {
+			d.result, err = parse.FromM3u8(d.m3u8Content, d.loadKeyFunc)
+		} else {
+			d.result, err = parse.FromURL(url, d.loadKeyFunc)
+		}
 		if err != nil {
 			return nil, err
 		}
