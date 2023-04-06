@@ -1,6 +1,7 @@
 package aliyun
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/bitly/go-simplejson"
@@ -33,13 +34,15 @@ func getVodPlayerInfo(rand, playAuth, fileId string, opts ...aliyun.OptionFunc) 
 	}
 	resp, err := httpclient.Get(playInfoRequestUrl)
 	if err != nil {
-		log.Println(err)
-		return nil, err
+		return nil, fmt.Errorf("aliyun: http get url: %s, err: %w", playInfoRequestUrl, err)
 	}
 	data, err := resp.ReadAll()
 	if err != nil {
-		log.Println(resp)
-		return nil, err
+		return nil, fmt.Errorf("aliyun: read err: %w", err)
 	}
-	return simplejson.NewJson(data)
+	sj, err := simplejson.NewJson(data)
+	if err != nil {
+		return nil, fmt.Errorf("aliyun: json decode: %s, err: %w", data, err)
+	}
+	return sj, nil
 }

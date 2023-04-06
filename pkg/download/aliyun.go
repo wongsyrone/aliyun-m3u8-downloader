@@ -1,6 +1,8 @@
 package download
 
 import (
+	"fmt"
+
 	"github.com/google/uuid"
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/request/aliyun"
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/tool"
@@ -20,7 +22,7 @@ func Aliyun(output, saveFilename string, chanSize int, videoId, playAuth string)
 	//tool.PrintJson(sj)
 	playInfoList, err := sj.Get("PlayInfoList").Get("PlayInfo").Array()
 	if err != nil {
-		return err
+		return fmt.Errorf("donwload: get PlayInfo err: %w", err)
 	}
 	playInfo := sj.Get("PlayInfoList").Get("PlayInfo").GetIndex(len(playInfoList) - 1)
 	tool.PrintJson(playInfo)
@@ -44,10 +46,10 @@ func Aliyun(output, saveFilename string, chanSize int, videoId, playAuth string)
 
 	downloader, err := NewDownloader(playURL, opts...)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	if err = downloader.Start(chanSize); err != nil {
-		panic(err)
+		return err
 	}
 	return nil
 }
