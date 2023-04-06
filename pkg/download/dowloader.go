@@ -122,7 +122,7 @@ func NewDownloader(url string, opts ...DownloaderOption) (*Downloader, error) {
 	}
 	// 创建保存目录
 	if err := os.MkdirAll(d.folder, os.ModePerm); err != nil {
-		return nil, fmt.Errorf("create storage folder failed: %s", err.Error())
+		return nil, fmt.Errorf("donwload: create storage folder failed: %s", err.Error())
 	}
 
 	// 解析合并的最终文件名
@@ -132,7 +132,7 @@ func NewDownloader(url string, opts ...DownloaderOption) (*Downloader, error) {
 		d.mergeTSFilename = tsFilename(url) + ".mp4"
 	}
 	if url == "" && d.m3u8Content == "" {
-		return nil, fmt.Errorf("url: %s and m3u8Content: %s", url, d.m3u8Content)
+		return nil, fmt.Errorf("donwload: url: %s and m3u8Content: %s", url, d.m3u8Content)
 	}
 
 	if d.mp4 {
@@ -142,7 +142,7 @@ func NewDownloader(url string, opts ...DownloaderOption) (*Downloader, error) {
 		d.tsFolder = filepath.Join(d.folder, tsFolderName)
 		// 创建ts文件目录
 		if err := os.MkdirAll(d.tsFolder, os.ModePerm); err != nil {
-			return nil, fmt.Errorf("create ts folder '[%s]' failed: %s", d.tsFolder, err.Error())
+			return nil, fmt.Errorf("donwload: create ts folder '[%s]' failed: %s", d.tsFolder, err.Error())
 		}
 
 		// 解析m3u8文件内容
@@ -153,7 +153,7 @@ func NewDownloader(url string, opts ...DownloaderOption) (*Downloader, error) {
 			d.result, err = parse.FromURL(url, d.loadKeyFunc)
 		}
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("donwload: parse m3u8 err: %s", err)
 		}
 		d.segLen = len(d.result.M3u8.Segments)
 		d.queue = genSlice(d.segLen)
@@ -193,7 +193,7 @@ func (d *Downloader) Start(concurrency int) error {
 	}
 	wg.Wait()
 	if err := d.mergeHsToMp4(); err != nil {
-		return err
+		return fmt.Errorf("download: merge ts to mp4 err: %w", err)
 	}
 	return nil
 }
