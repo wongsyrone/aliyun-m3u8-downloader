@@ -41,7 +41,8 @@ aliyun-m3u8-downloader baidu -u 视频地址 -t token -o=/data/example -f 文件
 		filename, _ := cmd.Flags().GetString("filename")
 		chanSize, _ := cmd.Flags().GetInt("chanSize")
 		keys := make(map[string]string)
-		downloader, err := download.NewDownloader(url,
+		downloader, err := download.NewDownloader(
+			download.WithUrl(url),
 			download.WithOutput(output),
 			download.WithFilename(filename),
 			download.WithLoadKeyFunc(func(m3u8Url, keyUrl string) (string, error) {

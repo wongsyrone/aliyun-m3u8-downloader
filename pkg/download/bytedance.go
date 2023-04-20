@@ -27,7 +27,7 @@ func Bytedance(output, saveFilename string, chanSize int, playAuthToken string) 
 		saveFilename = playInfo.FileID + ".mp4"
 	}
 	key := tool.PlayAuthDecrypt(playInfo.PlayAuth) // 解密 PlayAuth 为 m3u8 视频解密key
-	downloader, err := NewDownloader(playInfo.MainPlayURL, WithOutput(output), WithKey(key), WithFilename(saveFilename))
+	downloader, err := NewDownloader(WithUrl(playInfo.MainPlayURL), WithOutput(output), WithKey(key), WithFilename(saveFilename))
 	if err != nil {
 		panic(err)
 	}
