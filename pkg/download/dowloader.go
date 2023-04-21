@@ -35,6 +35,7 @@ type Downloader struct {
 
 	result *parse.Result
 
+	url         string
 	output      string
 	filename    string
 	key         string
@@ -48,6 +49,12 @@ type Downloader struct {
 }
 
 type DownloaderOption func(*Downloader)
+
+func WithUrl(url string) DownloaderOption {
+	return func(d *Downloader) {
+		d.url = url
+	}
+}
 
 func WithOutput(output string) DownloaderOption {
 	return func(d *Downloader) {
@@ -102,7 +109,7 @@ func loadKeyFunc(_, keyUrl string) (string, error) {
 }
 
 // NewDownloader returns a Task instance
-func NewDownloader(url string, opts ...DownloaderOption) (*Downloader, error) {
+func NewDownloader(opts ...DownloaderOption) (*Downloader, error) {
 	d := &Downloader{
 		loadKeyFunc: loadKeyFunc,
 	}
@@ -129,14 +136,14 @@ func NewDownloader(url string, opts ...DownloaderOption) (*Downloader, error) {
 	if d.filename != "" {
 		d.mergeTSFilename = strings.TrimSuffix(d.filename, ".mp4") + ".mp4"
 	} else {
-		d.mergeTSFilename = tsFilename(url) + ".mp4"
+		d.mergeTSFilename = tsFilename(d.url) + ".mp4"
 	}
-	if url == "" && d.m3u8Content == "" {
-		return nil, fmt.Errorf("donwload: url: %s and m3u8Content: %s", url, d.m3u8Content)
+	if d.url == "" && d.m3u8Content == "" {
+		return nil, fmt.Errorf("donwload: url: %s and m3u8Content: %s", d.url, d.m3u8Content)
 	}
 
 	if d.mp4 {
-		d.mp4Url = url
+		d.mp4Url = d.url
 	} else {
 		// 构造ts文件目录
 		d.tsFolder = filepath.Join(d.folder, tsFolderName)
@@ -147,10 +154,13 @@ func NewDownloader(url string, opts ...DownloaderOption) (*Downloader, error) {
 
 		// 解析m3u8文件内容
 		var err error
-		if url == "" {
+		if d.url != "" {
+			d.result, err = parse.FromURL(d.url, d.loadKeyFunc)
+
+		} else if d.m3u8Content != "" {
 			d.result, err = parse.FromM3u8(d.m3u8Content, d.loadKeyFunc)
 		} else {
-			d.result, err = parse.FromURL(url, d.loadKeyFunc)
+			return nil, fmt.Errorf("donwload: url: %s and m3u8Content: %s all empty", d.url, d.m3u8Content)
 		}
 		if err != nil {
 			return nil, fmt.Errorf("donwload: parse m3u8 err: %s", err)

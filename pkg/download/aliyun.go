@@ -33,7 +33,7 @@ func Aliyun(output, saveFilename string, chanSize int, videoId, playAuth string)
 	playURL, _ := playInfo.Get("PlayURL").String()
 	format, _ := playInfo.Get("Format").String()
 	tool.PrintJson(playURL)
-	opts := []DownloaderOption{WithOutput(output), WithFilename(saveFilename)}
+	opts := []DownloaderOption{WithUrl(playURL), WithOutput(output), WithFilename(saveFilename)}
 	if encryptType == AliyunVoDEncryption {
 		serverRand, _ := playInfo.Get("Rand").String()
 		plaintext, _ := playInfo.Get("Plaintext").String()
@@ -44,7 +44,7 @@ func Aliyun(output, saveFilename string, chanSize int, videoId, playAuth string)
 		opts = append(opts, WithMp4(true))
 	}
 
-	downloader, err := NewDownloader(playURL, opts...)
+	downloader, err := NewDownloader(opts...)
 	if err != nil {
 		return err
 	}
