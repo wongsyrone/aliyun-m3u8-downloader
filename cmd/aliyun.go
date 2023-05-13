@@ -38,12 +38,12 @@ aliyun-m3u8-downloader aliyun -p "WebPlayAuth" -v 视频id -o=/data/example --ch
 		if videoId == "" {
 			tool.PanicParameter("videoId")
 		}
+		if chanSize <= 0 {
+			panic("parameter 'chanSize' must be greater than 0")
+		}
 		var opts []aliyun.OptionFunc
 		if region != "" {
 			opts = append(opts, aliyun.WithRegion(region))
-		}
-		if chanSize <= 0 {
-			panic("parameter 'chanSize' must be greater than 0")
 		}
 		if err := download.Aliyun(output, filename, chanSize, videoId, playAuth, opts...); err != nil {
 			log.Fatalln(err)

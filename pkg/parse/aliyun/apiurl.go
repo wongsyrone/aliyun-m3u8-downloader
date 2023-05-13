@@ -38,9 +38,9 @@ func WithFormats(formats string) OptionFunc {
 	}
 }
 
-func WithRegion(formats string) OptionFunc {
+func WithRegion(region string) OptionFunc {
 	return func(opt *Option) {
-		opt.formats = formats
+		opt.region = region
 	}
 }
 
