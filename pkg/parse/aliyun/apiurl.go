@@ -78,8 +78,8 @@ func GetPlayInfoRequestUrl(rand, playAuth, videoId string, opts ...OptionFunc) (
 	privateParams["AuthInfo"], _ = sj.Get("AuthInfo").String()
 	privateParams["AuthTimeout"] = "7200"
 	privateParams["Definition"] = "240" //gk 此参数为空
-	privateParams["PlayConfig"] = "{}"
-	privateParams["PlayerVersion"] = "2.8.2"
+	privateParams["PlayConfig"] = `{"EncryptType":"AliyunVoDEncryption"}`
+	privateParams["PlayerVersion"] = "2.9.0"
 	privateParams["ReAuthInfo"] = "{}"
 	privateParams["SecurityToken"], _ = sj.Get("SecurityToken").String()
 	privateParams["VideoId"] = videoId
