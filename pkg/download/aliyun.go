@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+
+	parseAliyun "github.com/lbbniu/aliyun-m3u8-downloader/pkg/parse/aliyun"
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/request/aliyun"
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/tool"
 )
@@ -12,10 +14,10 @@ const (
 	AliyunVoDEncryption = "AliyunVoDEncryption"
 )
 
-func Aliyun(output, saveFilename string, chanSize int, videoId, playAuth string) error {
+func Aliyun(output, saveFilename string, chanSize int, videoId, playAuth string, parseOpts ...parseAliyun.OptionFunc) error {
 	// 随机字符串
 	clientRand := uuid.NewString()
-	sj, err := aliyun.GetVodPlayerInfo(clientRand, playAuth, videoId)
+	sj, err := aliyun.GetVodPlayerInfo(clientRand, playAuth, videoId, parseOpts...)
 	if err != nil {
 		return err
 	}
