@@ -70,7 +70,7 @@ func init() {
 	aliyunCmd.Flags().StringP("output", "o", "", "下载保存位置")
 	aliyunCmd.Flags().StringP("filename", "f", "", "保存文件名")
 	aliyunCmd.Flags().IntP("chanSize", "c", 1, "下载并发数")
-	aliyunCmd.Flags().StringP("region", "r", "", "地区，区域，默认值：cn-shanghai，可选值有：cn-beijing/cn-hangzhou/cn-shanghai等")
+	aliyunCmd.Flags().StringP("region", "g", "", "地区，区域，默认值：cn-shanghai，可选值有：cn-beijing/cn-hangzhou/cn-shanghai等")
 	_ = aliyunCmd.MarkFlagRequired("videoId")
 	_ = aliyunCmd.MarkFlagRequired("playAuth")
 }

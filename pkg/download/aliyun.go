@@ -21,9 +21,9 @@ func Aliyun(output, saveFilename string, chanSize int, videoId, playAuth string,
 	if err != nil {
 		return err
 	}
-	//tool.PrintJson(sj)
 	playInfoList, err := sj.Get("PlayInfoList").Get("PlayInfo").Array()
 	if err != nil {
+		tool.PrintJson(sj)
 		return fmt.Errorf("donwload: get PlayInfo err: %w", err)
 	}
 	playInfo := sj.Get("PlayInfoList").Get("PlayInfo").GetIndex(len(playInfoList) - 1)
