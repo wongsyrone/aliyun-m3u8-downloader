@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/request/aliyun"
+
 	"github.com/ddliu/go-httpclient"
 	"github.com/spf13/cobra"
 
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/download"
-	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/parse/aliyun"
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/tool"
 )
 

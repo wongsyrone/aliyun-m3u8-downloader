@@ -17,7 +17,7 @@ type Result struct {
 	M3u8 *M3u8
 }
 
-func FromURL(m3u8Url string, loadKeyFunc LoadKeyFunc) (*Result, error) {
+func FromM3u8URL(m3u8Url string, loadKeyFunc LoadKeyFunc) (*Result, error) {
 	u, err := url.Parse(m3u8Url)
 	if err != nil {
 		return nil, err
@@ -34,7 +34,7 @@ func FromURL(m3u8Url string, loadKeyFunc LoadKeyFunc) (*Result, error) {
 	}
 	if len(m3u8.MasterPlaylist) != 0 {
 		sf := m3u8.MasterPlaylist[0]
-		return FromURL(tool.ResolveURL(u, sf.URI), loadKeyFunc)
+		return FromM3u8URL(tool.ResolveURL(u, sf.URI), loadKeyFunc)
 	}
 	if len(m3u8.Segments) == 0 {
 		return nil, errors.New("can not found any TS file description")
@@ -63,7 +63,7 @@ func FromURL(m3u8Url string, loadKeyFunc LoadKeyFunc) (*Result, error) {
 	return result, nil
 }
 
-func FromM3u8(m3u8Str string, loadKeyFunc LoadKeyFunc) (*Result, error) {
+func FromM3u8Content(m3u8Str string, loadKeyFunc LoadKeyFunc) (*Result, error) {
 	reader := strings.NewReader(m3u8Str)
 	//noinspection GoUnhandledErrorResult
 	m3u8, err := parse(reader)
