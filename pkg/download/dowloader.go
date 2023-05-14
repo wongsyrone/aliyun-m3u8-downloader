@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -155,10 +154,9 @@ func NewDownloader(opts ...DownloaderOption) (*Downloader, error) {
 		// 解析m3u8文件内容
 		var err error
 		if d.url != "" {
-			d.result, err = parse.FromURL(d.url, d.loadKeyFunc)
-
+			d.result, err = parse.FromM3u8URL(d.url, d.loadKeyFunc)
 		} else if d.m3u8Content != "" {
-			d.result, err = parse.FromM3u8(d.m3u8Content, d.loadKeyFunc)
+			d.result, err = parse.FromM3u8Content(d.m3u8Content, d.loadKeyFunc)
 		} else {
 			return nil, fmt.Errorf("donwload: url: %s and m3u8Content: %s all empty", d.url, d.m3u8Content)
 		}
@@ -345,7 +343,7 @@ func (d *Downloader) mergeHsToMp4() error {
 	writer := bufio.NewWriter(mFile)
 	mergedCount := 0
 	for segIndex := 0; segIndex < d.segLen; segIndex++ {
-		bytes, err := ioutil.ReadFile(filepath.Join(d.tsFolder, tsFilename(d.tsURL(segIndex))))
+		bytes, err := os.ReadFile(filepath.Join(d.tsFolder, tsFilename(d.tsURL(segIndex))))
 		_, err = writer.Write(bytes)
 		if err != nil {
 			continue
