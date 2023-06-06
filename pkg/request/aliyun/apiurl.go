@@ -22,6 +22,7 @@ var (
 type OptionFunc func(opt *Option)
 
 type Option struct {
+	region     string
 	streamType string
 	formats    string
 }
@@ -37,9 +38,15 @@ func WithFormats(formats string) OptionFunc {
 	}
 }
 
+func WithRegion(region string) OptionFunc {
+	return func(opt *Option) {
+		opt.region = region
+	}
+}
+
 // GetPlayInfoRequestUrl 获取阿里云视频信息
 func GetPlayInfoRequestUrl(rand, playAuth, videoId string, opts ...OptionFunc) (string, error) {
-	opt := &Option{streamType: "video"}
+	opt := &Option{region: "cn-shanghai", streamType: "video"}
 	for _, fn := range opts {
 		fn(opt)
 	}
@@ -71,8 +78,10 @@ func GetPlayInfoRequestUrl(rand, playAuth, videoId string, opts ...OptionFunc) (
 	privateParams["AuthInfo"], _ = sj.Get("AuthInfo").String()
 	privateParams["AuthTimeout"] = "7200"
 	privateParams["Definition"] = "240" //gk 此参数为空
+	// 强制获取私有加密视频地址
+	//privateParams["PlayConfig"] = `{"EncryptType":"AliyunVoDEncryption"}`
 	privateParams["PlayConfig"] = "{}"
-	privateParams["PlayerVersion"] = "2.8.2"
+	privateParams["PlayerVersion"] = "2.9.0"
 	privateParams["ReAuthInfo"] = "{}"
 	privateParams["SecurityToken"], _ = sj.Get("SecurityToken").String()
 	privateParams["VideoId"] = videoId
@@ -83,7 +92,7 @@ func GetPlayInfoRequestUrl(rand, playAuth, videoId string, opts ...OptionFunc) (
 	signature := hmacSHA1Signature(accessKeySecret, stringToSign)
 	// query
 	queryString := cqs + "&Signature=" + percentEncode(signature)
-	return "https://vod.cn-shanghai.aliyuncs.com/?" + queryString, nil
+	return "https://vod." + opt.region + ".aliyuncs.com/?" + queryString, nil
 }
 
 func hmacSHA1Signature(accessKeySecret, stringToSign string) string {

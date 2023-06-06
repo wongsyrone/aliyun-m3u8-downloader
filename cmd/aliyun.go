@@ -4,10 +4,13 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/request/aliyun"
+
 	"github.com/ddliu/go-httpclient"
+	"github.com/spf13/cobra"
+
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/download"
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/tool"
-	"github.com/spf13/cobra"
 )
 
 // aliyunCmd represents the aliyun command
@@ -29,6 +32,7 @@ aliyun-m3u8-downloader aliyun -p "WebPlayAuth" -v 视频id -o=/data/example --ch
 		filename, _ := cmd.Flags().GetString("filename")
 		output, _ := cmd.Flags().GetString("output")
 		chanSize, _ := cmd.Flags().GetInt("chanSize")
+		region, _ := cmd.Flags().GetString("region")
 		if playAuth == "" {
 			tool.PanicParameter("playAuth")
 		}
@@ -38,7 +42,11 @@ aliyun-m3u8-downloader aliyun -p "WebPlayAuth" -v 视频id -o=/data/example --ch
 		if chanSize <= 0 {
 			panic("parameter 'chanSize' must be greater than 0")
 		}
-		if err := download.Aliyun(output, filename, chanSize, videoId, playAuth); err != nil {
+		var opts []aliyun.OptionFunc
+		if region != "" {
+			opts = append(opts, aliyun.WithRegion(region))
+		}
+		if err := download.Aliyun(output, filename, chanSize, videoId, playAuth, opts...); err != nil {
 			log.Fatalln(err)
 		}
 		fmt.Println("Done!")
@@ -63,6 +71,7 @@ func init() {
 	aliyunCmd.Flags().StringP("output", "o", "", "下载保存位置")
 	aliyunCmd.Flags().StringP("filename", "f", "", "保存文件名")
 	aliyunCmd.Flags().IntP("chanSize", "c", 1, "下载并发数")
+	aliyunCmd.Flags().StringP("region", "g", "", "地区，区域，默认值：cn-shanghai，可选值有：cn-beijing/cn-hangzhou/cn-shanghai等")
 	_ = aliyunCmd.MarkFlagRequired("videoId")
 	_ = aliyunCmd.MarkFlagRequired("playAuth")
 }
