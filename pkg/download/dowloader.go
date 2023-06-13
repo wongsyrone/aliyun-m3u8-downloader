@@ -97,11 +97,11 @@ func WithM3u8Content(m3u8Content string) DownloaderOption {
 func loadKeyFunc(_, keyUrl string) (string, error) {
 	resp, err := httpclient.Get(keyUrl)
 	if err != nil {
-		return "", fmt.Errorf("extract key failed: %w", err)
+		return "", fmt.Errorf("download: extract key failed: %w", err)
 	}
 	keyStr, err := resp.ToString()
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("download: ToString: %w", err)
 	}
 	//fmt.Println("decryption key: ", keyStr)
 	return keyStr, err
@@ -209,20 +209,20 @@ func (d *Downloader) Start(concurrency int) error {
 func (d *Downloader) downloadMp4(mp4Url string) error {
 	resp, err := httpclient.Get(mp4Url)
 	if err != nil {
-		return fmt.Errorf("request %s, err: %w", mp4Url, err)
+		return fmt.Errorf("download: request %s, err: %w", mp4Url, err)
 	}
 	// Create a mp4 file
 	mFilePath := filepath.Join(d.folder, d.mergeTSFilename)
 	mFile, err := os.Create(mFilePath)
 	if err != nil {
-		return fmt.Errorf("create mp4 file failed：%w", err)
+		return fmt.Errorf("download: create mp4 file failed：%w", err)
 	}
 	//noinspection GoUnhandledErrorResult
 	defer mFile.Close()
 	defer resp.Body.Close()
 	_, err = io.Copy(mFile, resp.Body)
 	if err != nil {
-		return fmt.Errorf("write mp4 file failed：%w", err)
+		return fmt.Errorf("download: write mp4 file failed：%w", err)
 	}
 	return nil
 }
@@ -231,7 +231,7 @@ func (d *Downloader) download(segIndex int) error {
 	tsUrl := d.tsURL(segIndex)
 	resp, err := httpclient.Get(tsUrl)
 	if err != nil {
-		return fmt.Errorf("request %s, %s", tsUrl, err.Error())
+		return fmt.Errorf("download: request %s, %s", tsUrl, err.Error())
 	}
 	filename := tsFilename(tsUrl)
 	//noinspection GoUnhandledErrorResult
@@ -239,15 +239,15 @@ func (d *Downloader) download(segIndex int) error {
 	fTemp := fPath + tsTempFileSuffix
 	f, err := os.Create(fTemp)
 	if err != nil {
-		return fmt.Errorf("create file: %s, %s", filename, err.Error())
+		return fmt.Errorf("download: create file: %s, %s", filename, err.Error())
 	}
 	tsData, err := resp.ReadAll()
 	if err != nil {
-		return fmt.Errorf("read bytes: %s, %s", tsUrl, err.Error())
+		return fmt.Errorf("download: read bytes: %s, %s", tsUrl, err.Error())
 	}
 	sf := d.result.M3u8.Segments[segIndex]
 	if sf == nil {
-		return fmt.Errorf("invalid segment index: %d", segIndex)
+		return fmt.Errorf("download: invalid segment index: %d", segIndex)
 	}
 	keyInfo, ok := d.result.M3u8.Keys[sf.KeyIndex]
 	if ok && keyInfo.Key != "" {
@@ -258,7 +258,7 @@ func (d *Downloader) download(segIndex int) error {
 		} else {
 			tsData, err = tool.AES128Decrypt(tsData, []byte(keyInfo.Key), []byte(keyInfo.IV))
 			if err != nil {
-				return fmt.Errorf("decrypt: %s, err: %w", tsUrl, err)
+				return fmt.Errorf("download: decrypt: %s, err: %w", tsUrl, err)
 			}
 		}
 	}
@@ -276,7 +276,7 @@ func (d *Downloader) download(segIndex int) error {
 	}
 	w := bufio.NewWriter(f)
 	if _, err := w.Write(tsData); err != nil {
-		return fmt.Errorf("write to %s: %s", fTemp, err.Error())
+		return fmt.Errorf("download: write to %s: %s", fTemp, err.Error())
 	}
 	// Release file resource to rename file
 	_ = f.Close()
@@ -312,7 +312,7 @@ func (d *Downloader) back(segIndex int) error {
 	d.lock.Lock()
 	defer d.lock.Unlock()
 	if sf := d.result.M3u8.Segments[segIndex]; sf == nil {
-		return fmt.Errorf("invalid segment index: %d", segIndex)
+		return fmt.Errorf("download: invalid segment index: %d", segIndex)
 	}
 	d.queue = append(d.queue, segIndex)
 	return nil
@@ -335,7 +335,7 @@ func (d *Downloader) mergeHsToMp4() error {
 	mFilePath := filepath.Join(d.folder, d.mergeTSFilename)
 	mFile, err := os.Create(mFilePath)
 	if err != nil {
-		return fmt.Errorf("create main TS file failed：%s", err.Error())
+		return fmt.Errorf("download: create main TS file failed：%w", err)
 	}
 	//noinspection GoUnhandledErrorResult
 	defer mFile.Close()
@@ -344,8 +344,7 @@ func (d *Downloader) mergeHsToMp4() error {
 	mergedCount := 0
 	for segIndex := 0; segIndex < d.segLen; segIndex++ {
 		bytes, err := os.ReadFile(filepath.Join(d.tsFolder, tsFilename(d.tsURL(segIndex))))
-		_, err = writer.Write(bytes)
-		if err != nil {
+		if _, err = writer.Write(bytes); err != nil {
 			continue
 		}
 		mergedCount++
