@@ -12,12 +12,16 @@ require (
 	github.com/spf13/cobra v1.3.0
 	github.com/stretchr/testify v1.8.3
 	github.com/wasmerio/wasmer-go v1.0.4
+	k8s.io/klog/v2 v2.100.1
 )
+
+replace github.com/wasmerio/wasmer-go v1.0.4 => github.com/lbbniu/wasmer-go v0.0.0-20230717095824-bb9598b7bd12
 
 require (
 	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/go-logr/logr v1.2.0 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/kr/pretty v0.3.0 // indirect

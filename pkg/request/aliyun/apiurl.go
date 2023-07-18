@@ -4,7 +4,7 @@ import (
 	"crypto/hmac"
 	"crypto/sha1"
 	"encoding/base64"
-	"log"
+	"fmt"
 	"net/url"
 	"sort"
 	"strings"
@@ -22,9 +22,16 @@ var (
 type OptionFunc func(opt *Option)
 
 type Option struct {
+	videoId    string
 	region     string
 	streamType string
 	formats    string
+}
+
+func WithVideoId(videoId string) OptionFunc {
+	return func(opt *Option) {
+		opt.videoId = videoId
+	}
 }
 
 func WithStreamType(streamType string) OptionFunc {
@@ -32,6 +39,7 @@ func WithStreamType(streamType string) OptionFunc {
 		opt.streamType = streamType
 	}
 }
+
 func WithFormats(formats string) OptionFunc {
 	return func(opt *Option) {
 		opt.formats = formats
@@ -45,17 +53,24 @@ func WithRegion(region string) OptionFunc {
 }
 
 // GetPlayInfoRequestUrl 获取阿里云视频信息
-func GetPlayInfoRequestUrl(rand, playAuth, videoId string, opts ...OptionFunc) (string, error) {
-	opt := &Option{region: "cn-shanghai", streamType: "video"}
-	for _, fn := range opts {
-		fn(opt)
-	}
+func GetPlayInfoRequestUrl(rand, playAuth string, opts ...OptionFunc) (string, error) {
 	playAuth = decodePlayAuth(playAuth)
 	sj, err := simplejson.NewJson([]byte(playAuth))
 	if err != nil {
-		log.Println(err)
-		return "", err
+		return "", fmt.Errorf("GetPlayInfoRequestUrl: json decode: %s, err: %w", playAuth, err)
 	}
+	opt := &Option{region: "cn-shanghai", streamType: "video"}
+	if videoId, err := sj.Get("VideoMeta").Get("VideoId").String(); err == nil && videoId != "" {
+		opt.videoId = videoId
+	}
+	// 自动识别 playAuth 中的region
+	if region, err := sj.Get("Region").String(); err == nil && region != "" {
+		opt.region = region
+	}
+	for _, fn := range opts {
+		fn(opt)
+	}
+
 	// 公共参数
 	publicParams := map[string]string{}
 	publicParams["AccessKeyId"], _ = sj.Get("AccessKeyId").String()
@@ -84,7 +99,7 @@ func GetPlayInfoRequestUrl(rand, playAuth, videoId string, opts ...OptionFunc) (
 	privateParams["PlayerVersion"] = "2.9.0"
 	privateParams["ReAuthInfo"] = "{}"
 	privateParams["SecurityToken"], _ = sj.Get("SecurityToken").String()
-	privateParams["VideoId"] = videoId
+	privateParams["VideoId"] = opt.videoId
 	allParams := getAllParams(publicParams, privateParams)
 	cqs := getCQS(allParams)
 	stringToSign := "GET" + "&" + percentEncode("/") + "&" + percentEncode(cqs)

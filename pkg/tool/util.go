@@ -3,12 +3,13 @@ package tool
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/url"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
+
+	"k8s.io/klog/v2"
 )
 
 func CurrentDir(joinPath ...string) (string, error) {
@@ -46,14 +47,12 @@ func DrawProgressBar(prefix string, proportion float32, width int, suffix ...str
 func PrintJson(i interface{}) {
 	data, err := json.Marshal(i)
 	if err != nil {
-		log.Println(err)
+		klog.Error(err)
 		return
 	}
-	log.Println(string(data))
+	klog.Infof("%s", data)
 }
 
 func PanicParameter(name string) {
-	fmt.Println()
-	fmt.Println("parameter '" + name + "' is required")
-	os.Exit(1)
+	klog.Fatalln("parameter '" + name + "' is required")
 }
