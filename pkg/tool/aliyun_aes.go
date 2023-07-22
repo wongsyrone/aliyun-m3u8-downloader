@@ -9,6 +9,7 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/base64"
+	"encoding/hex"
 	"encoding/pem"
 	"errors"
 	"fmt"
@@ -52,7 +53,7 @@ func DecryptKey(r1, rand, plain string) string {
 	key2 := []byte(tempKey2)
 	finalKey, _ := Decrypt(key2, iv, plain)
 	b, _ := base64.StdEncoding.DecodeString(finalKey)
-	return fmt.Sprintf("%x", b)
+	return hex.EncodeToString(b)
 }
 
 // EncryptRand Rand 参数加密

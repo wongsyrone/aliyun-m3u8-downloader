@@ -2,7 +2,6 @@ package aliyun
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/bitly/go-simplejson"
 	"github.com/ddliu/go-httpclient"
@@ -20,28 +19,27 @@ func init() {
 	})
 }
 
-func GetVodPlayerInfo(rand, playAuth, fileId string, opts ...OptionFunc) (*simplejson.Json, error) {
+func GetVodPlayerInfo(rand, playAuth string, opts ...OptionFunc) (*simplejson.Json, error) {
 	rand, _ = tool.EncryptRand([]byte(rand))
-	return getVodPlayerInfo(rand, playAuth, fileId, opts...)
+	return getVodPlayerInfo(rand, playAuth, opts...)
 }
 
-func getVodPlayerInfo(rand, playAuth, fileId string, opts ...OptionFunc) (*simplejson.Json, error) {
-	playInfoRequestUrl, err := GetPlayInfoRequestUrl(rand, playAuth, fileId, opts...)
+func getVodPlayerInfo(rand, playAuth string, opts ...OptionFunc) (*simplejson.Json, error) {
+	playInfoRequestUrl, err := GetPlayInfoRequestUrl(rand, playAuth, opts...)
 	if err != nil {
-		log.Println(err)
 		return nil, err
 	}
 	resp, err := httpclient.Get(playInfoRequestUrl)
 	if err != nil {
-		return nil, fmt.Errorf("aliyun: http get url: %s, err: %w", playInfoRequestUrl, err)
+		return nil, fmt.Errorf("getVodPlayerInfo: http get url: %s, err: %w", playInfoRequestUrl, err)
 	}
 	data, err := resp.ReadAll()
 	if err != nil {
-		return nil, fmt.Errorf("aliyun: read err: %w", err)
+		return nil, fmt.Errorf("getVodPlayerInfo: read err: %w", err)
 	}
 	sj, err := simplejson.NewJson(data)
 	if err != nil {
-		return nil, fmt.Errorf("aliyun: json decode: %s, err: %w", data, err)
+		return nil, fmt.Errorf("getVodPlayerInfo: json decode: %s, err: %w", data, err)
 	}
 	return sj, nil
 }
