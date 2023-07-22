@@ -368,7 +368,9 @@ func (d *Downloader) mergeTsToMp4() error {
 
 	// Create a TS file for merging, all segment files will be written to this file.
 	mFilePath := filepath.Join(d.folder, d.mergeTSFilename)
-
+	defer func() {
+		_ = os.RemoveAll(d.tsFolder)
+	}()
 	switch d.mergeTsType {
 	case Ffmpeg:
 		return d.mergeTsToMp4ByFfmpeg(mFilePath)
@@ -422,8 +424,6 @@ func (d *Downloader) mergeTsToMp4ByGo(mFilePath string) error {
 		tool.DrawProgressBar("merge", float32(mergedCount)/float32(d.segLen), progressWidth)
 	}
 	_ = writer.Flush()
-	// Remove `ts` folder
-	_ = os.RemoveAll(d.tsFolder)
 
 	if mergedCount != d.segLen {
 		fmt.Printf("[warning] \n%d files merge failed", d.segLen-mergedCount)
