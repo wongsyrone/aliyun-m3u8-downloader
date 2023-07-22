@@ -3,9 +3,9 @@
 
 package cmd
 
-import "github.com/lbbniu/aliyun-m3u8-downloader/plugins"
+import "github.com/lbbniu/aliyun-m3u8-downloader/plugins/addcmd"
 
 func init() {
 	// 插件为定制开发服务
-	plugins.AddCmd(rootCmd)
+	addcmd.AddCmd(rootCmd)
 }

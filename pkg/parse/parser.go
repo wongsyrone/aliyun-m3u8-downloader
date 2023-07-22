@@ -63,7 +63,7 @@ func FromM3u8URL(m3u8Url string, loadKeyFunc LoadKeyFunc) (*Result, error) {
 	return result, nil
 }
 
-func FromM3u8Content(m3u8Str string, loadKeyFunc LoadKeyFunc) (*Result, error) {
+func FromM3u8Content(url, m3u8Str string, loadKeyFunc LoadKeyFunc) (*Result, error) {
 	reader := strings.NewReader(m3u8Str)
 	//noinspection GoUnhandledErrorResult
 	m3u8, err := parse(reader)
@@ -84,7 +84,7 @@ func FromM3u8Content(m3u8Str string, loadKeyFunc LoadKeyFunc) (*Result, error) {
 			// Request URL to extract decryption key
 			keyUrl := tool.ResolveURL(nil, k.URI)
 			// 加载key
-			keyStr, err := loadKeyFunc("", keyUrl)
+			keyStr, err := loadKeyFunc(url, keyUrl)
 			if err != nil {
 				return nil, err
 			}
