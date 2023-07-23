@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/log"
 	"k8s.io/klog/v2"
 )
 
@@ -47,10 +48,10 @@ func DrawProgressBar(prefix string, proportion float32, width int, suffix ...str
 func PrintJson(i interface{}) {
 	data, err := json.Marshal(i)
 	if err != nil {
-		klog.Error(err)
+		log.Error(err)
 		return
 	}
-	klog.Infof("%s", data)
+	log.Infof("%s", data)
 }
 
 func PanicParameter(name string) {
