@@ -20,7 +20,7 @@ aliyun-m3u8-downloader 是一个使用了 Go 语言编写的迷你 M3U8 下载�
 - [慕课网体系课和实战课](https://www.imooc.com)
 - [银成医考](https://wx.yixueks.com)
 - [51cto](https://edu.51cto.com)
-- [保利威 Polyv](https://www.polyv.net/)：支持v13，其他版本待测试
+- [保利威 Polyv](https://www.polyv.net/)：支持v12(VRM12)、v13(VRM13)，其他版本待测试
 - 某兽医app
 - 极客时间训练营
 - 图形化界面下载器，适合无计算机基础用户使用

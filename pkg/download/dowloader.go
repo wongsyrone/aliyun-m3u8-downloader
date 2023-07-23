@@ -5,14 +5,15 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
 	"sync"
 	"sync/atomic"
+	"time"
 
+	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/log"
 	fluentffmpeg "github.com/modfy/fluent-ffmpeg"
 
 	"github.com/ddliu/go-httpclient"
@@ -34,7 +35,7 @@ const (
 	progressWidth    = 40
 )
 
-type decryptFunc func(int, string, []byte, *parse.KeyInfo) ([]byte, error)
+type decryptFunc func(int, string, []byte, *parse.Segment, *parse.KeyInfo) ([]byte, error)
 
 type Downloader struct {
 	lock            sync.Mutex
@@ -130,7 +131,7 @@ func loadKeyFunc(_, keyUrl string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("download: ToString: %w", err)
 	}
-	//fmt.Println("decryption key: ", keyStr)
+	//log.Debugf("decryption key: %s", keyStr)
 	return keyStr, err
 }
 
@@ -218,9 +219,9 @@ func (d *Downloader) Start(concurrency int) error {
 			defer wg.Done()
 			if er := d.download(idx); er != nil {
 				// Back into the queue, retry request
-				fmt.Printf("[failed] %v\n", er)
+				log.Errorf("[failed] %v", er)
 				if er = d.back(idx); er != nil {
-					fmt.Println(er)
+					log.Error(er)
 				}
 			}
 			<-limitChan
@@ -280,7 +281,7 @@ func (d *Downloader) download(segIndex int) error {
 	if ok {
 		if d.decryptFunc != nil {
 			// 自定义解密函数
-			tsData, err = d.decryptFunc(segIndex, fPath, tsData, keyInfo)
+			tsData, err = d.decryptFunc(segIndex, fPath, tsData, sf, keyInfo)
 			if err != nil {
 				return fmt.Errorf("download: decryptFunc: %s, err: %w", tsUrl, err)
 			}
@@ -321,7 +322,7 @@ func (d *Downloader) download(segIndex int) error {
 	// Maybe it will be safer in this way...
 	atomic.AddInt32(&d.finish, 1)
 	//tool.DrawProgressBar("Downloading", float32(d.finish)/float32(d.segLen), progressWidth)
-	fmt.Printf("[download %6.2f%%] %s\n", float32(d.finish)/float32(d.segLen)*100, tsUrl)
+	log.Infof("[download %6.2f%%] %s", float32(d.finish)/float32(d.segLen)*100, tsUrl)
 	return nil
 }
 
@@ -363,7 +364,7 @@ func (d *Downloader) mergeTsToMp4() error {
 		}
 	}
 	if missingCount > 0 {
-		fmt.Printf("[warning] %d files missing\n", missingCount)
+		log.Infof("[warning] %d files missing", missingCount)
 	}
 
 	// Create a TS file for merging, all segment files will be written to this file.
@@ -380,7 +381,10 @@ func (d *Downloader) mergeTsToMp4() error {
 }
 
 func (d *Downloader) mergeTsToMp4ByFfmpeg(mFilePath string) error {
-	log.Println(mFilePath, "开始合并")
+	log.Infof("%s 开始合并", mFilePath)
+	defer func(startTime time.Time) {
+		log.Infof("%s 合并结束，耗时: %.0fs", mFilePath, time.Since(startTime).Seconds())
+	}(time.Now())
 	var tsFiles []string
 	// 设置输入文件列表
 	for segIndex := 0; segIndex < d.segLen; segIndex++ {
@@ -398,10 +402,9 @@ func (d *Downloader) mergeTsToMp4ByFfmpeg(mFilePath string) error {
 		AudioCodec("aac")
 	if err := ffmpeg.Run(); err != nil {
 		out, _ := io.ReadAll(buf)
-		fmt.Println(string(out))
+		log.Info(string(out))
 		return err
 	}
-	log.Println(mFilePath, "完成合并")
 	return nil
 }
 
@@ -426,10 +429,10 @@ func (d *Downloader) mergeTsToMp4ByGo(mFilePath string) error {
 	_ = writer.Flush()
 
 	if mergedCount != d.segLen {
-		fmt.Printf("[warning] \n%d files merge failed", d.segLen-mergedCount)
+		log.Warnf("[warning] %d files merge failed", d.segLen-mergedCount)
 	}
 
-	fmt.Printf("\n[output] %s\n", mFilePath)
+	log.Infof("[output] %s", mFilePath)
 
 	return nil
 }
