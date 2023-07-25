@@ -39,6 +39,7 @@ require (
 	github.com/tklauser/go-sysconf v0.3.11 // indirect
 	github.com/tklauser/numcpus v0.6.0 // indirect
 	github.com/yusufpapurcu/wmi v1.2.3 // indirect
+	go.uber.org/automaxprocs v1.5.2 // indirect
 	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/sys v0.8.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
