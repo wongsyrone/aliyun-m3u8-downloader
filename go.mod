@@ -20,6 +20,8 @@ require (
 
 replace github.com/wasmerio/wasmer-go v1.0.4 => github.com/lbbniu/wasmer-go v0.0.0-20230717095824-bb9598b7bd12
 
+replace github.com/TarsCloud/TarsGo v1.4.4 => github.com/TarsCloud/TarsGo v1.4.5-rc1.0.20230727033404-a28b4cb17062
+
 require (
 	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
