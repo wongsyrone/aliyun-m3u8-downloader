@@ -6,7 +6,7 @@ var log = rogger.GetLogger("aliyun-m3u8-downloader")
 
 func init() {
 	rogger.SetCallerFlag(false)
-	//rogger.SetLevel(rogger.INFO)
+	rogger.SetLevel(rogger.INFO)
 }
 
 func Debug(args ...interface{}) {

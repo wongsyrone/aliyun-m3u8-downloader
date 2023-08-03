@@ -197,6 +197,10 @@ func NewDownloader(opts ...DownloaderOption) (*Downloader, error) {
 	return d, nil
 }
 
+func (d *Downloader) SetDecryptFunc(decryptFunc decryptFunc) {
+	d.decryptFunc = decryptFunc
+}
+
 // Start runs downloader
 func (d *Downloader) Start(concurrency int) error {
 	if d.mp4 {
