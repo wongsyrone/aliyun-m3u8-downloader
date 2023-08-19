@@ -197,6 +197,10 @@ func NewDownloader(opts ...DownloaderOption) (*Downloader, error) {
 	return d, nil
 }
 
+func (d *Downloader) SetDecryptFunc(decryptFunc decryptFunc) {
+	d.decryptFunc = decryptFunc
+}
+
 // Start runs downloader
 func (d *Downloader) Start(concurrency int) error {
 	if d.mp4 {
@@ -283,7 +287,13 @@ func (d *Downloader) download(segIndex int) error {
 			// 自定义解密函数
 			tsData, err = d.decryptFunc(segIndex, fPath, tsData, sf, keyInfo)
 			if err != nil {
-				return fmt.Errorf("download: decryptFunc: %s, err: %w", tsUrl, err)
+				// TODO: 如果当前片段时长大于1秒，则认为解密失败
+				seg := d.segment(segIndex)
+				if seg.Duration > 1 {
+					return fmt.Errorf("download: decryptFunc: %s, err: %w", tsUrl, err)
+				}
+				log.Errorf("segment: %+v, err: %v", seg, tsUrl, err)
+				tsData = nil
 			}
 		} else if keyInfo.AliyunVoDEncryption {
 			// 阿里云私有加密
@@ -440,6 +450,10 @@ func (d *Downloader) mergeTsToMp4ByGo(mFilePath string) error {
 func (d *Downloader) tsURL(segIndex int) string {
 	seg := d.result.M3u8.Segments[segIndex]
 	return tool.ResolveURL(d.result.URL, seg.URI)
+}
+
+func (d *Downloader) segment(segIndex int) *parse.Segment {
+	return d.result.M3u8.Segments[segIndex]
 }
 
 func (d *Downloader) tsFilename(tsUrl string) string {

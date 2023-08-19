@@ -20,22 +20,6 @@ const (
 	AtfFiledFollowPayload byte = 0x03
 )
 
-type TSParser struct {
-	stream *TSStream
-}
-
-type TSPesFragment struct {
-	packets []*TSPacket
-}
-
-type TSStream struct {
-	data    []byte
-	key     []byte
-	packets []*TSPacket
-	videos  []*TSPesFragment
-	audios  []*TSPesFragment
-}
-
 type TSHeader struct {
 	syncByte                   byte //8
 	transportErrorIndicator    byte //1
@@ -63,6 +47,22 @@ type TSPacket struct {
 	payloadRelativeOffset int // 0
 	payloadLength         int // 0
 	payload               []byte
+}
+
+type TSPesFragment struct {
+	packets []*TSPacket
+}
+
+type TSStream struct {
+	data    []byte
+	key     []byte
+	packets []*TSPacket
+	videos  []*TSPesFragment
+	audios  []*TSPesFragment
+}
+
+type TSParser struct {
+	stream *TSStream
 }
 
 func NewTSPacket() *TSPacket {
@@ -123,7 +123,7 @@ func (p *TSParser) decryptPES(byteBuf []byte, pesFragments []*TSPesFragment, key
 	}
 }
 
-func (pes *TSPesFragment) Add(packet *TSPacket) {
+func (pes *TSPesFragment) add(packet *TSPacket) {
 	pes.packets = append(pes.packets, packet)
 }
 
@@ -148,7 +148,7 @@ func (stream *TSStream) parseTs() {
 				}
 				pes = new(TSPesFragment)
 			}
-			pes.Add(packet)
+			pes.add(packet)
 		//audio data
 		case 0x101:
 			if packet.header.isPayloadStart {
@@ -157,7 +157,7 @@ func (stream *TSStream) parseTs() {
 				}
 				pes = new(TSPesFragment)
 			}
-			pes.Add(packet)
+			pes.add(packet)
 		}
 		stream.packets = append(stream.packets, packet)
 	}
