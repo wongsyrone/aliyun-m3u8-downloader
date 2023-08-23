@@ -331,8 +331,8 @@ func (d *Downloader) download(segIndex int) error {
 	}
 	// Maybe it will be safer in this way...
 	atomic.AddInt32(&d.finish, 1)
-	//tool.DrawProgressBar("Downloading", float32(d.finish)/float32(d.segLen), progressWidth)
-	log.Infof("[download %6.2f%%] %s", float32(d.finish)/float32(d.segLen)*100, tsUrl)
+	tool.DrawProgressBar("Downloading", float32(d.finish)/float32(d.segLen), progressWidth)
+	//log.Infof("[download %6.2f%%] %s", float32(d.finish)/float32(d.segLen)*100, tsUrl)
 	return nil
 }
 
