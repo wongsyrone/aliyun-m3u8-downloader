@@ -331,7 +331,7 @@ func (d *Downloader) download(segIndex int) error {
 	}
 	// Maybe it will be safer in this way...
 	atomic.AddInt32(&d.finish, 1)
-	tool.DrawProgressBar("Downloading", float32(d.finish)/float32(d.segLen), progressWidth)
+	tool.DrawProgressBar(fmt.Sprintf("downloading %d/%d", d.finish, d.segLen), float32(d.finish)/float32(d.segLen), progressWidth)
 	//log.Infof("[download %6.2f%%] %s", float32(d.finish)/float32(d.segLen)*100, tsUrl)
 	return nil
 }
@@ -426,6 +426,7 @@ func (d *Downloader) mergeTsToMp4ByGo(mFilePath string) error {
 	//noinspection GoUnhandledErrorResult
 	defer mFile.Close()
 
+	fmt.Println()
 	writer := bufio.NewWriter(mFile)
 	mergedCount := 0
 	for segIndex := 0; segIndex < d.segLen; segIndex++ {
@@ -434,16 +435,18 @@ func (d *Downloader) mergeTsToMp4ByGo(mFilePath string) error {
 			continue
 		}
 		mergedCount++
-		tool.DrawProgressBar("merge", float32(mergedCount)/float32(d.segLen), progressWidth)
+		tool.DrawProgressBar(
+			fmt.Sprintf("merge       %d/%d", mergedCount, d.segLen),
+			float32(mergedCount)/float32(d.segLen),
+			progressWidth,
+		)
 	}
 	_ = writer.Flush()
-
+	fmt.Println()
 	if mergedCount != d.segLen {
 		log.Warnf("[warning] %d files merge failed", d.segLen-mergedCount)
 	}
-
 	log.Infof("[output] %s", mFilePath)
-
 	return nil
 }
 
