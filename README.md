@@ -27,6 +27,7 @@ aliyun-m3u8-downloader 是一个使用了 Go 语言编写的迷你 M3U8 下载�
 - [ ] 马士兵
 - [ ] 百战程序员
 - [ ] 库课网校
+- [ ] 昭昭医考
 - 图形化界面下载器，适合无计算机基础用户使用
 
 ![main](./images/main.png)
@@ -62,13 +63,13 @@ Linux 和 MacOS
 
 ```
 # 普通m3u8下载
-./aliyun-m3u8-downloader normal -u https://www.lbbniu.com/index.m3u8 -o=/data/example --chanSize 1
+./aliyun-m3u8-downloader normal -u https://www.lbbniu.com/index.m3u8 -o=/data/example -c 1
 # 阿里云m3u8私有加密
-./aliyun-m3u8-downloader aliyun -p "PlayAuth" -v 视频id -o=/data/example --chanSize 1
+./aliyun-m3u8-downloader aliyun -p "PlayAuth" -o=/data/example -c 1
 # 火山引擎视频云视频下载
-./aliyun-m3u8-downloader bytedance -p "PlayAuthToken" -o=/data/example --chanSize 1# 火山引擎视频云视频下载
+./aliyun-m3u8-downloader bytedance -p "PlayAuthToken" -o=/data/example -c 1
 # 百度智能云视频下载
-./aliyun-m3u8-downloader baidu -u m3u8视频地址 -t token  -o=/data/example --chanSize 1
+./aliyun-m3u8-downloader baidu -u m3u8视频地址 -t token  -o=/data/example -c 1
 ```
 
 ## 下载

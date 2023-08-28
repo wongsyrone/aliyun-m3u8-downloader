@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/spf13/viper"
+
 	"github.com/ddliu/go-httpclient"
 
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/download"
@@ -23,7 +25,7 @@ var baidubceCmd = &cobra.Command{
 	Use:   "baidu",
 	Short: "百度智能云视频下载",
 	Long: `百度智能云视频下载. 使用示例:
-aliyun-m3u8-downloader baidu -u 视频地址 -t token -o=/data/example -f 文件名 --chanSize 1`,
+aliyun-m3u8-downloader baidu -u 视频地址 -t token -o=/data/example -f 文件名 --concurrency 1`,
 	PreRun: func(cmd *cobra.Command, args []string) {
 		url, _ := cmd.Flags().GetString("url")
 		if url == "" {
@@ -37,9 +39,9 @@ aliyun-m3u8-downloader baidu -u 视频地址 -t token -o=/data/example -f 文件
 	Run: func(cmd *cobra.Command, args []string) {
 		url, _ := cmd.Flags().GetString("url")
 		token, _ := cmd.Flags().GetString("token")
-		output, _ := cmd.Flags().GetString("output")
-		filename, _ := cmd.Flags().GetString("filename")
-		chanSize, _ := cmd.Flags().GetInt("chanSize")
+		filename := viper.GetString("filename")
+		output := viper.GetString("output")
+		concurrency := viper.GetInt("concurrency")
 		keys := make(map[string]string)
 		downloader, err := download.NewDownloader(
 			download.WithUrl(url),
@@ -73,7 +75,7 @@ aliyun-m3u8-downloader baidu -u 视频地址 -t token -o=/data/example -f 文件
 		if err != nil {
 			log.Fatalln(err)
 		}
-		if err := downloader.Start(chanSize); err != nil {
+		if err := downloader.Start(concurrency); err != nil {
 			log.Fatalln(err)
 		}
 		fmt.Println("Done!")
