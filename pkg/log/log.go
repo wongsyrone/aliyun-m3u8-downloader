@@ -5,6 +5,10 @@ import "github.com/TarsCloud/TarsGo/tars/util/rogger"
 var log = rogger.GetLogger("aliyun-m3u8-downloader")
 
 func init() {
+	Init()
+}
+
+func Init() {
 	rogger.SetCallerFlag(false)
 	rogger.SetLevel(rogger.INFO)
 }

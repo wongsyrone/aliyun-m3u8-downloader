@@ -1,14 +1,14 @@
 package cmd
 
 import (
-	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/request/aliyun"
-	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/tool"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"k8s.io/klog/v2"
 
-	"github.com/spf13/cobra"
-
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/download"
+	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/log"
+	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/request/aliyun"
+	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/tool"
 )
 
 // aliyunCmd represents the aliyun command
@@ -35,7 +35,8 @@ aliyun-m3u8-downloader aliyun -p "WebPlayAuth" -v 视频id -o=/data/example --co
 			opts = append(opts, aliyun.WithRegion(region))
 		}
 		if err := download.Aliyun(output, filename, concurrency, playAuth, opts...); err != nil {
-			klog.Fatalln(err)
+			log.Errorf("aliyun err: %v", err)
+			return
 		}
 		klog.Info("Done!")
 	},
