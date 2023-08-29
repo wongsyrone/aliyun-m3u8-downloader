@@ -1,12 +1,11 @@
 package cmd
 
 import (
-	"fmt"
-
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/download"
-	"github.com/spf13/cobra"
+	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/log"
 )
 
 // normalCmd represents the normal command
@@ -22,12 +21,12 @@ aliyun-m3u8-downloader normal -u=https://www.lbbniu.com/index.m3u8 -o=/data/exam
 		concurrency := viper.GetInt("concurrency")
 		downloader, err := download.NewDownloader(download.WithUrl(url), download.WithFilename(filename), download.WithOutput(output))
 		if err != nil {
-			panic(err)
+			log.Errorf("new err: %v", err)
+			return
 		}
 		if err := downloader.Start(concurrency); err != nil {
-			panic(err)
+			log.Errorf("start err: %v", err)
 		}
-		fmt.Println("Done!")
 	},
 }
 

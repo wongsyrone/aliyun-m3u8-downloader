@@ -1,15 +1,13 @@
 package cmd
 
 import (
-	"fmt"
-	"log"
-
+	"github.com/ddliu/go-httpclient"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/ddliu/go-httpclient"
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/download"
+	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/log"
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/tool"
-	"github.com/spf13/cobra"
 )
 
 // bytedanceCmd represents the bytedance command
@@ -23,11 +21,6 @@ aliyun-m3u8-downloader bytedance -p "PlayAuthToken" -o=/data/example --concurren
 			"Accept-Encoding":        "gzip",
 			httpclient.OPT_USERAGENT: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36",
 		})
-		if referer, _ := cmd.Flags().GetString("referer"); referer != "" {
-			httpclient.Defaults(httpclient.Map{
-				httpclient.OPT_REFERER: referer,
-			})
-		}
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		playAuth, _ := cmd.Flags().GetString("playAuth")
@@ -38,9 +31,8 @@ aliyun-m3u8-downloader bytedance -p "PlayAuthToken" -o=/data/example --concurren
 			tool.PanicParameter("playAuth")
 		}
 		if err := download.Bytedance(output, filename, concurrency, playAuth); err != nil {
-			log.Fatalln(err)
+			log.Errorf("bytedance err: %v", err)
 		}
-		fmt.Println("Done!")
 	},
 }
 

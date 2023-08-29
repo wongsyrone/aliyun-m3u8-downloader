@@ -3,15 +3,14 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"log"
-
-	"github.com/spf13/viper"
 
 	"github.com/ddliu/go-httpclient"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/download"
+	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/log"
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/tool"
-	"github.com/spf13/cobra"
 )
 
 type Encrypted struct {
@@ -30,10 +29,6 @@ aliyun-m3u8-downloader baidu -u 视频地址 -t token -o=/data/example -f 文件
 		url, _ := cmd.Flags().GetString("url")
 		if url == "" {
 			tool.PanicParameter("url")
-		}
-		chanSize, _ := cmd.Flags().GetInt("chanSize")
-		if chanSize <= 0 {
-			panic("parameter 'chanSize' must be greater than 0")
 		}
 	},
 	Run: func(cmd *cobra.Command, args []string) {
@@ -73,12 +68,12 @@ aliyun-m3u8-downloader baidu -u 视频地址 -t token -o=/data/example -f 文件
 				return keyStr, nil
 			}))
 		if err != nil {
-			log.Fatalln(err)
+			log.Errorf("new err: %v", err)
+			return
 		}
 		if err := downloader.Start(concurrency); err != nil {
-			log.Fatalln(err)
+			log.Errorf("start err: %v", err)
 		}
-		fmt.Println("Done!")
 	},
 }
 
@@ -93,9 +88,7 @@ func init() {
 	// is called directly, e.g.:
 	baidubceCmd.Flags().StringP("url", "u", "", "m3u8 地址")
 	baidubceCmd.Flags().StringP("token", "t", "", "获取key token")
-	baidubceCmd.Flags().StringP("output", "o", "", "下载保存位置")
-	baidubceCmd.Flags().StringP("filename", "f", "", "保存文件名")
-	baidubceCmd.Flags().IntP("chanSize", "c", 1, "下载并发数")
+
 	_ = baidubceCmd.MarkFlagRequired("url")
 	_ = baidubceCmd.MarkFlagRequired("token")
 }

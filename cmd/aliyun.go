@@ -3,7 +3,6 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"k8s.io/klog/v2"
 
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/download"
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/log"
@@ -36,9 +35,7 @@ aliyun-m3u8-downloader aliyun -p "WebPlayAuth" -v 视频id -o=/data/example --co
 		}
 		if err := download.Aliyun(output, filename, concurrency, playAuth, opts...); err != nil {
 			log.Errorf("aliyun err: %v", err)
-			return
 		}
-		klog.Info("Done!")
 	},
 }
 
