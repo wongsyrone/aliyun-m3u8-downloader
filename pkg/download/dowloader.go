@@ -391,6 +391,7 @@ func (d *Downloader) mergeTsToMp4() error {
 }
 
 func (d *Downloader) mergeTsToMp4ByFfmpeg(mFilePath string) error {
+	fmt.Println()
 	log.Infof("%s 开始合并", mFilePath)
 	defer func(startTime time.Time) {
 		log.Infof("%s 合并结束，耗时: %.0fs", mFilePath, time.Since(startTime).Seconds())
