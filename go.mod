@@ -7,11 +7,11 @@ require (
 	github.com/TarsCloud/TarsGo v1.4.4
 	github.com/avast/retry-go/v4 v4.3.4
 	github.com/bitly/go-simplejson v0.5.0
-	github.com/bytecodealliance/wasmtime-go/v11 v11.0.0
+	github.com/bytecodealliance/wasmtime-go/v12 v12.0.0
+	github.com/chenhengjie123/ffmpeg-go v0.0.0-20230605085620-a54e5b5e2be5
 	github.com/ddliu/go-httpclient v0.6.9
 	github.com/google/uuid v1.3.0
 	github.com/modfy/fluent-ffmpeg v0.1.0
-	github.com/moontrade/wavm-go v0.3.1
 	github.com/robfig/cron/v3 v3.0.0
 	github.com/shirou/gopsutil/v3 v3.23.5
 	github.com/spf13/cobra v1.3.0
@@ -52,6 +52,7 @@ require (
 	github.com/tdewolff/test v1.0.9 // indirect
 	github.com/tklauser/go-sysconf v0.3.11 // indirect
 	github.com/tklauser/numcpus v0.6.0 // indirect
+	github.com/ying32/dylib v0.0.0-20220227124818-fdf9ea9fbc96 // indirect
 	github.com/yusufpapurcu/wmi v1.2.3 // indirect
 	go.uber.org/automaxprocs v1.5.2 // indirect
 	golang.org/x/net v0.7.0 // indirect
