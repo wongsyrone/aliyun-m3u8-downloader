@@ -1,6 +1,7 @@
 package parse
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"net/url"
@@ -27,8 +28,12 @@ func FromM3u8URL(m3u8Url string, loadKeyFunc LoadKeyFunc) (*Result, error) {
 	if err != nil {
 		return nil, fmt.Errorf("request m3u8 URL failed: %w", err)
 	}
+	data, err := resp.ReadAll()
+	if err != nil {
+		return nil, fmt.Errorf("read m3u8 URL failed: %w", err)
+	}
 	//noinspection GoUnhandledErrorResult
-	m3u8, err := parse(resp.Body)
+	m3u8, err := parse(bytes.NewReader(data))
 	if err != nil {
 		return nil, err
 	}
@@ -43,17 +48,22 @@ func FromM3u8URL(m3u8Url string, loadKeyFunc LoadKeyFunc) (*Result, error) {
 		URL:  u,
 		M3u8: m3u8,
 	}
+	keys := make(map[string]string, len(m3u8.Keys))
 	for idx, k := range m3u8.Keys {
 		switch {
 		case k.Method == "" || k.Method == CryptMethodNONE:
 			continue
 		case k.Method == CryptMethodAES:
-			// Request URL to extract decryption key
-			keyUrl := tool.ResolveURL(u, k.URI)
-			// 加载key
-			keyStr, err := loadKeyFunc(m3u8Url, keyUrl)
-			if err != nil {
-				return nil, err
+			keyStr, ok := keys[k.URI]
+			if !ok {
+				// Request URL to extract decryption key
+				keyUrl := tool.ResolveURL(u, k.URI)
+				// 加载key
+				keyStr, err = loadKeyFunc(m3u8Url, keyUrl)
+				if err != nil {
+					return nil, err
+				}
+				keys[k.URI] = keyStr
 			}
 			m3u8.Keys[idx].Key = keyStr
 		default:
