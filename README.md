@@ -24,6 +24,7 @@ aliyun-m3u8-downloader 是一个使用了 Go 语言编写的迷你 M3U8 下载�
 - [51cto](https://edu.51cto.com)
 - [某兽医app](https://www.med126.com/)
 - [极客时间训练营](https://time.geekbang.org/)
+- [现代卓越](https://remote.chinapm.org/)
 - [ ] 知群
 - [ ] 马士兵
 - [ ] 百战程序员
