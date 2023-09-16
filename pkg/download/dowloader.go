@@ -13,6 +13,9 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/yapingcat/gomedia/go-mp4"
+	"github.com/yapingcat/gomedia/go-mpeg2"
+
 	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/log"
 	fluentffmpeg "github.com/modfy/fluent-ffmpeg"
 
@@ -27,6 +30,7 @@ type MergeTsType int
 const (
 	Golang MergeTsType = iota
 	Ffmpeg
+	GoMedia
 )
 
 const (
@@ -139,6 +143,7 @@ func loadKeyFunc(_, keyUrl string) (string, error) {
 func NewDownloader(opts ...DownloaderOption) (*Downloader, error) {
 	d := &Downloader{
 		loadKeyFunc: loadKeyFunc,
+		mergeTsType: GoMedia,
 	}
 	for _, opt := range opts {
 		opt(d)
@@ -260,18 +265,26 @@ func (d *Downloader) downloadMp4(mp4Url string) error {
 }
 
 func (d *Downloader) download(segIndex int) error {
+	defer func() {
+		tool.DrawProgressBar(fmt.Sprintf("downloading %d/%d", d.finish, d.segLen), float32(d.finish)/float32(d.segLen), progressWidth)
+		//log.Infof("[download %6.2f%%] %s", float32(d.finish)/float32(d.segLen)*100, tsUrl)
+	}()
 	tsUrl := d.tsURL(segIndex)
-	resp, err := httpclient.Get(tsUrl)
-	if err != nil {
-		return fmt.Errorf("download: request %s, %s", tsUrl, err.Error())
-	}
 	filename := d.tsFilename(tsUrl)
 	//noinspection GoUnhandledErrorResult
 	fPath := filepath.Join(d.tsFolder, filename)
+	if _, err := os.Stat(fPath); err == nil {
+		atomic.AddInt32(&d.finish, 1)
+		return nil
+	}
 	fTemp := fPath + tsTempFileSuffix
 	f, err := os.Create(fTemp)
 	if err != nil {
 		return fmt.Errorf("download: create file: %s, %s", filename, err.Error())
+	}
+	resp, err := httpclient.Get(tsUrl)
+	if err != nil {
+		return fmt.Errorf("download: request %s, %s", tsUrl, err.Error())
 	}
 	tsData, err := resp.ReadAll()
 	if err != nil {
@@ -281,8 +294,7 @@ func (d *Downloader) download(segIndex int) error {
 	if sf == nil {
 		return fmt.Errorf("download: invalid segment index: %d", segIndex)
 	}
-	keyInfo, ok := d.result.M3u8.Keys[sf.KeyIndex]
-	if ok {
+	if keyInfo, ok := d.result.M3u8.Keys[sf.KeyIndex]; ok {
 		if d.decryptFunc != nil {
 			// 自定义解密函数
 			tsData, err = d.decryptFunc(segIndex, fPath, tsData, sf, keyInfo)
@@ -331,8 +343,6 @@ func (d *Downloader) download(segIndex int) error {
 	}
 	// Maybe it will be safer in this way...
 	atomic.AddInt32(&d.finish, 1)
-	tool.DrawProgressBar(fmt.Sprintf("downloading %d/%d", d.finish, d.segLen), float32(d.finish)/float32(d.segLen), progressWidth)
-	//log.Infof("[download %6.2f%%] %s", float32(d.finish)/float32(d.segLen)*100, tsUrl)
 	return nil
 }
 
@@ -385,8 +395,10 @@ func (d *Downloader) mergeTsToMp4() error {
 	switch d.mergeTsType {
 	case Ffmpeg:
 		return d.mergeTsToMp4ByFfmpeg(mFilePath)
-	default:
+	case Golang:
 		return d.mergeTsToMp4ByGo(mFilePath)
+	default:
+		return d.mergeTsToMp4ByGoMedia(mFilePath)
 	}
 }
 
@@ -431,8 +443,8 @@ func (d *Downloader) mergeTsToMp4ByGo(mFilePath string) error {
 	writer := bufio.NewWriter(mFile)
 	mergedCount := 0
 	for segIndex := 0; segIndex < d.segLen; segIndex++ {
-		bytes, err := os.ReadFile(filepath.Join(d.tsFolder, d.tsFilename(d.tsURL(segIndex))))
-		if _, err = writer.Write(bytes); err != nil {
+		buf, err := os.ReadFile(filepath.Join(d.tsFolder, d.tsFilename(d.tsURL(segIndex))))
+		if _, err = writer.Write(buf); err != nil {
 			continue
 		}
 		mergedCount++
@@ -449,6 +461,75 @@ func (d *Downloader) mergeTsToMp4ByGo(mFilePath string) error {
 	}
 	log.Infof("[output] %s", mFilePath)
 	return nil
+}
+
+func (d *Downloader) mergeTsToMp4ByGoMedia(mFilePath string) error {
+	hasAudio := false
+	hasVideo := false
+	var aTid uint32 = 0
+	var vTid uint32 = 0
+	mp4file, err := os.OpenFile(mFilePath, os.O_CREATE|os.O_RDWR|os.O_TRUNC, 0666)
+	if err != nil {
+		return fmt.Errorf("download: open mp4 file failed：%w", err)
+	}
+	defer mp4file.Close()
+
+	muxer, err := mp4.CreateMp4Muxer(mp4file)
+	if err != nil {
+		return fmt.Errorf("download: create mp4 muxer failed：%w", err)
+	}
+
+	demuxer := mpeg2.NewTSDemuxer()
+	demuxer.OnFrame = func(cid mpeg2.TS_STREAM_TYPE, frame []byte, pts uint64, dts uint64) {
+		if cid == mpeg2.TS_STREAM_H264 {
+			if !hasVideo {
+				vTid = muxer.AddVideoTrack(mp4.MP4_CODEC_H264)
+				hasVideo = true
+			}
+			if err := muxer.Write(vTid, frame, pts, dts); err != nil {
+				log.Errorf("write h264 frame failed: %v", err)
+			}
+		} else if cid == mpeg2.TS_STREAM_AAC {
+			if !hasAudio {
+				aTid = muxer.AddAudioTrack(mp4.MP4_CODEC_AAC)
+				hasAudio = true
+			}
+			if err := muxer.Write(aTid, frame, pts, dts); err != nil {
+				log.Errorf("write aac frame failed: %v", err)
+			}
+		} else if cid == mpeg2.TS_STREAM_AUDIO_MPEG1 || cid == mpeg2.TS_STREAM_AUDIO_MPEG2 {
+			if !hasAudio {
+				aTid = muxer.AddAudioTrack(mp4.MP4_CODEC_MP3)
+				hasAudio = true
+			}
+			if err := muxer.Write(aTid, frame, pts, dts); err != nil {
+				log.Errorf("write audio frame failed: %v", err)
+			}
+		}
+	}
+
+	mergedCount := 0
+	for segIndex := 0; segIndex < d.segLen; segIndex++ {
+		buf, err := os.ReadFile(filepath.Join(d.tsFolder, d.tsFilename(d.tsURL(segIndex))))
+		if err != nil {
+			continue
+		}
+		if err = demuxer.Input(bytes.NewReader(buf)); err != nil {
+			continue
+		}
+		mergedCount++
+		tool.DrawProgressBar(
+			fmt.Sprintf("merge       %d/%d", mergedCount, d.segLen),
+			float32(mergedCount)/float32(d.segLen),
+			progressWidth,
+		)
+	}
+	fmt.Println()
+	if mergedCount != d.segLen {
+		log.Warnf("[warning] %d files merge failed", d.segLen-mergedCount)
+	}
+	log.Infof("[output] %s", mFilePath)
+	return muxer.WriteTrailer()
 }
 
 func (d *Downloader) tsURL(segIndex int) string {
