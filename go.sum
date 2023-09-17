@@ -311,6 +311,11 @@ github.com/modern-go/reflect2 v1.0.1/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3Rllmb
 github.com/modern-go/reflect2 v1.0.2/go.mod h1:yWuevngMOJpCy52FWWMvUC8ws7m/LJsjYzDa0/r8luk=
 github.com/modfy/fluent-ffmpeg v0.1.0 h1:9T191rhSK6KfoDo9Y/+0Tph3khrudvLQEEi05O+ijHA=
 github.com/modfy/fluent-ffmpeg v0.1.0/go.mod h1:GauXGqGYAmYFupCWG8n1eyuLZMKmLxGTGvszYkJ0Oyo=
+github.com/moonfdd/ffmpeg-go v0.0.0-20230306023015-7de6b82b1252/go.mod h1:Ep1iwcwuwKO++JEsV/mLGEv8UQCdOme1MVCiogMBKFg=
+github.com/moonfdd/ffmpeg-go v0.0.0-20230421133911-7e3161df350f h1:6zXMYJCuZoxRQSXGwaaIYSKCbilkJpT1tROhoaNWfQc=
+github.com/moonfdd/ffmpeg-go v0.0.0-20230421133911-7e3161df350f/go.mod h1:QG6o6CUIRcYUpl9WqRalTdYdiiCu1zVI34W0TMrJ2E4=
+github.com/moonfdd/x264-go v0.0.0-20230306092525-f96c6d80b156 h1:wpsEUuU7RDT7E2baF0bC+Rxa9EONRBZi/SEQjDQzyWA=
+github.com/moonfdd/x264-go v0.0.0-20230306092525-f96c6d80b156/go.mod h1:v3CX+q+kjCI9DCSCExTbQFnJsMZ8XTy7x3U+BNpGOHE=
 github.com/mwitkow/go-conntrack v0.0.0-20161129095857-cc309e4a2223/go.mod h1:qRWi+5nqEBWmkhHvq77mSJWrCKwh8bxhgT7d/eI7P4U=
 github.com/pascaldekloe/goe v0.0.0-20180627143212-57f6aae5913c/go.mod h1:lzWF7FIEvWOWxwDKqyGYQf6ZUaNfKdP144TG7ZOy1lc=
 github.com/pascaldekloe/goe v0.1.0/go.mod h1:lzWF7FIEvWOWxwDKqyGYQf6ZUaNfKdP144TG7ZOy1lc=
