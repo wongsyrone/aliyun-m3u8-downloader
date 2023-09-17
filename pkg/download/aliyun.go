@@ -29,12 +29,12 @@ func Aliyun(output, saveFilename string, chanSize int, playAuth string, parseOpt
 		return fmt.Errorf("donwload: Get PlayInfo message: %s", res)
 	}
 	playInfo := sj.Get("PlayInfoList").Get("PlayInfo").GetIndex(len(playInfoList) - 1)
-	tool.PrintJson(playInfo)
+	//tool.PrintJson(playInfo)
 	if saveFilename == "" {
 		saveFilename, _ = sj.Get("VideoBase").Get("Title").String()
 	}
 	playURL, _ := playInfo.Get("PlayURL").String()
-	opts := []DownloaderOption{WithUrl(playURL), WithOutput(output), WithFilename(saveFilename)}
+	opts := []DownloaderOption{WithUrl(playURL), WithOutput(output), WithFilename(saveFilename), WithMergeTsType(Golang)}
 	encryptType, _ := playInfo.Get("EncryptType").String()
 	var logs []string
 	if encryptType == AliyunVoDEncryption {
@@ -57,8 +57,5 @@ func Aliyun(output, saveFilename string, chanSize int, playAuth string, parseOpt
 	if err != nil {
 		return err
 	}
-	if err = downloader.Start(chanSize); err != nil {
-		return err
-	}
-	return nil
+	return downloader.Start(chanSize)
 }
