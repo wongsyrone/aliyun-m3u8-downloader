@@ -8,7 +8,6 @@ require (
 	github.com/avast/retry-go/v4 v4.3.4
 	github.com/bitly/go-simplejson v0.5.0
 	github.com/bytecodealliance/wasmtime-go/v12 v12.0.0
-	github.com/chenhengjie123/ffmpeg-go v0.0.0-20230605085620-a54e5b5e2be5
 	github.com/ddliu/go-httpclient v0.6.9
 	github.com/google/uuid v1.3.0
 	github.com/modfy/fluent-ffmpeg v0.1.0
@@ -25,7 +24,10 @@ require (
 	k8s.io/klog/v2 v2.100.1
 )
 
-replace github.com/TarsCloud/TarsGo v1.4.4 => github.com/TarsCloud/TarsGo v1.4.5-rc1.0.20230728020733-66bb6e14019d
+replace (
+	github.com/TarsCloud/TarsGo v1.4.4 => github.com/TarsCloud/TarsGo v1.4.5-rc1.0.20230728020733-66bb6e14019d
+	github.com/moonfdd/x264-go => github.com/lbbniu/x264-go v0.0.0-20230918142744-a3c82bb8eae3
+)
 
 require (
 	github.com/andybalholm/cascadia v1.3.1 // indirect
