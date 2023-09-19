@@ -12,7 +12,7 @@ aliyun-m3u8-downloader 是一个使用了 Go 语言编写的迷你 M3U8 下载�
 - **华为云视频点播**
 - **气球云视频点播**
 - **[保利威视 Polyv](https://www.polyv.net/)**：支持v1104(算法)、v12(算法)、v13(wasm + libx264), 暂未开源
-  - v13 架构：ts解密、h264解密使用go语言实现，h264解密为yuv使用wasmtime-go实现，yuv转h264使用libx264实现，最后aac+h264合成ts使用go语言实现
+  - v13 架构：ts、h264解密使用go语言实现，h264解码为yuv使用wasmtime-go实现，yuv转h264使用libx264实现，最后aac+h264合成ts使用go语言实现
 
 ### 插件
 目前支持的闭源全自动批量下载器插件包括：
