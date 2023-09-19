@@ -11,7 +11,8 @@ aliyun-m3u8-downloader 是一个使用了 Go 语言编写的迷你 M3U8 下载�
 - **百度智能云视频点播**
 - **华为云视频点播**
 - **气球云视频点播**
-- **[保利威 Polyv](https://www.polyv.net/)**：支持v1104(算法)、v12(算法)、v13(ffmpeg动态库), 暂未开源
+- **[保利威视 Polyv](https://www.polyv.net/)**：支持v1104(算法)、v12(算法)、v13(wasm + libx264), 暂未开源
+  - v13 架构：ts解密、h264解密使用go语言实现，h264解密为yuv使用wasmtime-go实现，yuv转h264使用libx264实现，最后aac+h264合成ts使用go语言实现
 
 ### 插件
 目前支持的闭源全自动批量下载器插件包括：
@@ -25,15 +26,16 @@ aliyun-m3u8-downloader 是一个使用了 Go 语言编写的迷你 M3U8 下载�
 - [某兽医app](https://www.med126.com/)
 - [极客时间训练营](https://time.geekbang.org/)
 - [现代卓越](https://remote.chinapm.org/)
-- [ ] 知群
-- [ ] 马士兵
-- [ ] 百战程序员
-- [ ] 库课网校
-- [ ] 昭昭医考
+- [ ] [好医术](https://www.haoyishu.com/)
+- [ ] [知群](https://izhiqun.com/)
+- [ ] [马士兵](https://www.mashibing.com/)
+- [ ] [百战程序员](https://www.itbaizhan.com/)
+- [ ] [库课网校](https://www.kuke99.com/)
+- [ ] [昭昭医考](https://www.yikao88.com/)
 - 图形化界面下载器，适合无计算机基础用户使用
 
-![main](./images/main.png)
-![about](./images/about.png)
+![main](images/main.png)
+![about](images/about.png)
 
 ## 功能
 
@@ -50,9 +52,9 @@ aliyun-m3u8-downloader 是一个使用了 Go 语言编写的迷你 M3U8 下载�
 
 ```bash
 # 交叉编译
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" -o m3u8-downloader
-CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags "-s -w" -o m3u8-downloader
-CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -o m3u8-downloader.exe
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" -o aliyun-m3u8-downloader
+CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags "-s -w" -o aliyun-m3u8-downloader
+CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -ldflags "-s -w" -o aliyun-m3u8-downloader.exe
 # 普通m3u8下载
 go run main.go normal -u=https://www.lbbniu.com/index.m3u8 -o=/data/example --chanSize 1
 # 阿里云m3u8私有加密
@@ -85,8 +87,8 @@ Linux 和 MacOS
 
 ## 联系开发者
 
-![wechat](./images/wechat.png)
+![wechat](images/wechat.png)
 
 ## License
 
-[MIT License](./LICENSE)
+[MIT License](LICENSE)
