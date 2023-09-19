@@ -12,6 +12,8 @@ require (
 	github.com/ddliu/go-httpclient v0.6.9
 	github.com/google/uuid v1.3.0
 	github.com/modfy/fluent-ffmpeg v0.1.0
+	github.com/moonfdd/ffmpeg-go v0.0.0-20230421133911-7e3161df350f
+	github.com/moonfdd/x264-go v0.0.0-20230306092525-f96c6d80b156
 	github.com/robfig/cron/v3 v3.0.0
 	github.com/shirou/gopsutil/v3 v3.23.5
 	github.com/spf13/cobra v1.3.0
