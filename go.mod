@@ -12,7 +12,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/modfy/fluent-ffmpeg v0.1.0
 	github.com/moonfdd/ffmpeg-go v0.0.0-20230421133911-7e3161df350f
-	github.com/moonfdd/x264-go v0.0.0-20230306092525-f96c6d80b156
+	github.com/moonfdd/x264-go v0.0.1
 	github.com/robfig/cron/v3 v3.0.0
 	github.com/shirou/gopsutil/v3 v3.23.5
 	github.com/spf13/cobra v1.3.0
@@ -26,7 +26,7 @@ require (
 
 replace (
 	github.com/TarsCloud/TarsGo v1.4.4 => github.com/TarsCloud/TarsGo v1.4.5-rc1.0.20230728020733-66bb6e14019d
-	github.com/moonfdd/x264-go => github.com/lbbniu/x264-go v0.0.0-20230918142744-a3c82bb8eae3
+	github.com/moonfdd/x264-go v0.0.1 => github.com/lbbniu/x264-go v0.0.0-20230921133209-07b00a375c29
 )
 
 require (
@@ -41,6 +41,7 @@ require (
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
+	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/pelletier/go-toml v1.9.4 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
