@@ -35,6 +35,8 @@ aliyun-m3u8-downloader 是一个使用了 Go 语言编写的迷你 M3U8 下载�
 - [ ] [百战程序员](https://www.itbaizhan.com/)
 - [ ] [库课网校](https://www.kuke99.com/)
 - [ ] [昭昭医考](https://www.yikao88.com/)
+- [ ] [翼狐网](https://www.yiihuu.com/)
+- [ ] [cgjoy课堂](https://www.cgjoy.com/h5/pages/course/index/index)
 - 图形化界面下载器，适合无计算机基础用户使用
 
 ![main](images/main.png)
