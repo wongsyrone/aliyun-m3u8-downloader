@@ -31,7 +31,7 @@ aliyun-m3u8-downloader 是一个使用了 Go 语言编写的迷你 M3U8 下载�
 - [现代卓越](https://remote.chinapm.org/)
 - [ ] [好医术](https://www.haoyishu.com/)
 - [ ] [知群](https://izhiqun.com/)
-- [ ] [马士兵](https://www.mashibing.com/)
+- [x] [马士兵](https://www.mashibing.com/)
 - [ ] [百战程序员](https://www.itbaizhan.com/)
 - [ ] [库课网校](https://www.kuke99.com/)
 - [ ] [昭昭医考](https://www.yikao88.com/)
