@@ -17,6 +17,10 @@ aliyun-m3u8-downloader 是一个使用了 Go 语言编写的迷你 M3U8 下载�
   - yuv转h264使用libx264实现
   - 最后aac+h264合成ts使用go语言实现
 
+### 联系开发者
+
+![wechat](images/wechat.png)
+
 ### 插件
 目前支持的闭源全自动批量下载器插件包括：
 - [x] [光环国际](https://yun.aura.cn)
@@ -41,7 +45,6 @@ aliyun-m3u8-downloader 是一个使用了 Go 语言编写的迷你 M3U8 下载�
 - 图形化界面下载器，适合无计算机基础用户使用
 
 ![main](images/main.png)
-![about](images/about.png)
 
 ## 功能
 
@@ -129,6 +132,7 @@ Flags:
 
 Use "aliyun-m3u8-downloader [command] --help" for more information about a command.
 ```
+
 ## 下载
 
 [二进制文件](https://github.com/lbbniu/aliyun-m3u8-downloader/releases)
@@ -137,10 +141,6 @@ Use "aliyun-m3u8-downloader [command] --help" for more information about a comma
 
 - [https://github.com/SweetInk/lagou-course-downloader](https://github.com/SweetInk/lagou-course-downloader)
 - [https://github.com/oopsguy/m3u8](https://github.com/oopsguy/m3u8)
-
-## 联系开发者
-
-![wechat](images/wechat.png)
 
 ## License
 
