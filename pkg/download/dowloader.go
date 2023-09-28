@@ -168,7 +168,7 @@ func NewDownloader(opts ...DownloaderOption) (*Downloader, error) {
 	if d.filename != "" {
 		d.mergeTSFilename = strings.TrimSuffix(d.filename, ".mp4") + ".mp4"
 	} else {
-		d.mergeTSFilename = d.tsFilename(d.url) + ".mp4"
+		d.mergeTSFilename = d.mp4Filename(d.url) + ".mp4"
 	}
 	if d.url == "" && d.m3u8Content == "" {
 		return nil, fmt.Errorf("donwload: url: %s and m3u8Content: %s", d.url, d.m3u8Content)
@@ -270,7 +270,7 @@ func (d *Downloader) download(segIndex int) error {
 		//log.Infof("[download %6.2f%%] %s", float32(d.finish)/float32(d.segLen)*100, tsUrl)
 	}()
 	tsUrl := d.tsURL(segIndex)
-	filename := d.tsFilename(tsUrl)
+	filename := d.tsFilename(segIndex, tsUrl)
 	//noinspection GoUnhandledErrorResult
 	fPath := filepath.Join(d.tsFolder, filename)
 	if _, err := os.Stat(fPath); err == nil {
@@ -378,7 +378,7 @@ func (d *Downloader) mergeTsToMp4() error {
 	// In fact, the number of downloaded segments should be equal to number of m3u8 segments
 	missingCount := 0
 	for segIndex := 0; segIndex < d.segLen; segIndex++ {
-		f := filepath.Join(d.tsFolder, d.tsFilename(d.tsURL(segIndex)))
+		f := filepath.Join(d.tsFolder, d.tsFilename(segIndex, d.tsURL(segIndex)))
 		if _, err := os.Stat(f); err != nil {
 			missingCount++
 		}
@@ -411,7 +411,7 @@ func (d *Downloader) mergeTsToMp4ByFfmpeg(mFilePath string) error {
 	var tsFiles []string
 	// 设置输入文件列表
 	for segIndex := 0; segIndex < d.segLen; segIndex++ {
-		tsFile := filepath.Join(d.tsFolder, d.tsFilename(d.tsURL(segIndex)))
+		tsFile := filepath.Join(d.tsFolder, d.tsFilename(segIndex, d.tsURL(segIndex)))
 		tsFiles = append(tsFiles, tsFile)
 	}
 	buf := &bytes.Buffer{}
@@ -443,7 +443,7 @@ func (d *Downloader) mergeTsToMp4ByGo(mFilePath string) error {
 	writer := bufio.NewWriter(mFile)
 	mergedCount := 0
 	for segIndex := 0; segIndex < d.segLen; segIndex++ {
-		buf, err := os.ReadFile(filepath.Join(d.tsFolder, d.tsFilename(d.tsURL(segIndex))))
+		buf, err := os.ReadFile(filepath.Join(d.tsFolder, d.tsFilename(segIndex, d.tsURL(segIndex))))
 		if _, err = writer.Write(buf); err != nil {
 			continue
 		}
@@ -510,7 +510,7 @@ func (d *Downloader) mergeTsToMp4ByGoMedia(mFilePath string) error {
 
 	mergedCount := 0
 	for segIndex := 0; segIndex < d.segLen; segIndex++ {
-		buf, err := os.ReadFile(filepath.Join(d.tsFolder, d.tsFilename(d.tsURL(segIndex))))
+		buf, err := os.ReadFile(filepath.Join(d.tsFolder, d.tsFilename(segIndex, d.tsURL(segIndex))))
 		if err != nil {
 			continue
 		}
@@ -541,7 +541,15 @@ func (d *Downloader) segment(segIndex int) *parse.Segment {
 	return d.result.M3u8.Segments[segIndex]
 }
 
-func (d *Downloader) tsFilename(tsUrl string) string {
+func (d *Downloader) tsFilename(segIndex int, tsUrl string) string {
+	idx := strings.Index(tsUrl, "?")
+	if idx > 0 {
+		return fmt.Sprintf("%d-%s", segIndex, path.Base(tsUrl[:idx]))
+	}
+	return fmt.Sprintf("%d-%s", segIndex, path.Base(tsUrl))
+}
+
+func (d *Downloader) mp4Filename(tsUrl string) string {
 	idx := strings.Index(tsUrl, "?")
 	if idx > 0 {
 		return path.Base(tsUrl[:idx])
