@@ -23,26 +23,40 @@ aliyun-m3u8-downloader 是一个使用了 Go 语言编写的迷你 M3U8 下载�
 
 ### 插件
 目前支持的闭源全自动批量下载器插件包括：
+
+#### 阿里云
+ 
 - [x] [光环国际](https://yun.aura.cn)
 - [x] [中公网校](https://www.eoffcn.com)
 - [x] [学培课堂](https://www.fhzjedu.com)
 - [x] [云上虎](https://www.huohujiaoyu.com)
-- [x] [慕课网体系课和实战课](https://www.imooc.com)
+
 - [x] [银成医考](https://wx.yixueks.com)
 - [x] [51cto](https://edu.51cto.com)
 - [x] [某兽医app](https://www.med126.com/)
 - [x] [极客时间训练营](https://time.geekbang.org/)
+
+#### 气球云
+
 - [x] [现代卓越](https://remote.chinapm.org/)
-- [ ] [好医术](https://www.haoyishu.com/)
-- [ ] [知群](https://izhiqun.com/)
+- [x] [常道教育](https://daoyanqianxiang.com/)
+
+#### 保利威视
+
 - [x] [马士兵](https://www.mashibing.com/)
 - [ ] [百战程序员](https://www.itbaizhan.com/)
 - [ ] [库课网校](https://www.kuke99.com/)
 - [ ] [昭昭医考](https://www.yikao88.com/)
 - [ ] [翼狐网](https://www.yiihuu.com/)
 - [ ] [cgjoy课堂](https://www.cgjoy.com/h5/pages/course/index/index)
-- [x] [Siki学院-免费课程](https://www.sikiedu.com/)
+
+#### 其他
+ 
+- [x] [慕课网体系课和实战课](https://www.imooc.com)
+- [ ] [好医术](https://www.haoyishu.com/)
+- [ ] [知群](https://izhiqun.com/)
 - [x] [短书平台](https://www.duanshu.com/) --> [太阳老师讲数学](https://hlrzp.duanshu.com) 公众号
+- [x] [Siki学院-免费课程](https://www.sikiedu.com/)
 - 图形化界面下载器，适合无计算机基础用户使用
 
 ![main](images/main.png)
