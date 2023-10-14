@@ -30,9 +30,8 @@ aliyun-m3u8-downloader 是一个使用了 Go 语言编写的迷你 M3U8 下载�
 - [x] [中公网校](https://www.eoffcn.com)
 - [x] [学培课堂](https://www.fhzjedu.com)
 - [x] [云上虎](https://www.huohujiaoyu.com)
-
 - [x] [银成医考](https://wx.yixueks.com)
-- [x] [51cto](https://edu.51cto.com)
+- [x] [51cto](https://edu.51cto.com) 普通课程、精品课（微职位）
 - [x] [某兽医app](https://www.med126.com/)
 - [x] [极客时间训练营](https://time.geekbang.org/)
 
