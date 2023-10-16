@@ -481,6 +481,11 @@ func (d *Downloader) mergeTsToMp4ByGoMedia(mFilePath string) error {
 
 	demuxer := mpeg2.NewTSDemuxer()
 	demuxer.OnFrame = func(cid mpeg2.TS_STREAM_TYPE, frame []byte, pts uint64, dts uint64) {
+		defer func() {
+			if err := recover(); err != nil {
+				log.Errorf("mp4 merge failed: %v", err)
+			}
+		}()
 		if cid == mpeg2.TS_STREAM_H264 {
 			if !hasVideo {
 				vTid = muxer.AddVideoTrack(mp4.MP4_CODEC_H264)
