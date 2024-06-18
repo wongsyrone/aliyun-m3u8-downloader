@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/tool"
+	"github.com/wongsyrone/aliyun-m3u8-downloader/pkg/tool"
 )
 
 const (

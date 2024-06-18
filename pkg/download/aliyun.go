@@ -7,8 +7,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/request/aliyun"
-	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/tool"
+	"github.com/wongsyrone/aliyun-m3u8-downloader/pkg/request/aliyun"
+	"github.com/wongsyrone/aliyun-m3u8-downloader/pkg/tool"
 )
 
 const (

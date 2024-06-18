@@ -1,4 +1,4 @@
-module github.com/lbbniu/aliyun-m3u8-downloader
+module github.com/wongsyrone/aliyun-m3u8-downloader
 
 go 1.18
 

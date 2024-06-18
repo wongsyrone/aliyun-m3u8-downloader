@@ -4,10 +4,10 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/download"
-	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/log"
-	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/request/aliyun"
-	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/tool"
+	"github.com/wongsyrone/aliyun-m3u8-downloader/pkg/download"
+	"github.com/wongsyrone/aliyun-m3u8-downloader/pkg/log"
+	"github.com/wongsyrone/aliyun-m3u8-downloader/pkg/request/aliyun"
+	"github.com/wongsyrone/aliyun-m3u8-downloader/pkg/tool"
 )
 
 // aliyunCmd represents the aliyun command
@@ -53,6 +53,6 @@ func init() {
 	// aliyunCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	aliyunCmd.Flags().StringP("playAuth", "p", "", "web播放认证信息")
 	aliyunCmd.Flags().StringP("videoId", "v", "", "视频id")
-	aliyunCmd.Flags().StringP("region", "g", "", "地区，区域，默认值：cn-shanghai，可选值有：cn-beijing/cn-hangzhou/cn-shanghai等")
+	aliyunCmd.Flags().StringP("region", "g", "cn-shanghai", "地区，区域，默认值：cn-shanghai，可选值有：cn-beijing/cn-hangzhou/cn-shanghai等")
 	_ = aliyunCmd.MarkFlagRequired("playAuth")
 }

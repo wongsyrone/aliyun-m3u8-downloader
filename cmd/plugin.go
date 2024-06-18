@@ -3,7 +3,7 @@
 
 package cmd
 
-import "github.com/lbbniu/aliyun-m3u8-downloader/plugins/addcmd"
+import "github.com/wongsyrone/aliyun-m3u8-downloader/plugins/addcmd"
 
 func init() {
 	// 插件为定制开发服务

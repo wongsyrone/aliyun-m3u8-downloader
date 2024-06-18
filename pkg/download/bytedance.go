@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/request/bytedance"
-	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/tool"
+	"github.com/wongsyrone/aliyun-m3u8-downloader/pkg/request/bytedance"
+	"github.com/wongsyrone/aliyun-m3u8-downloader/pkg/tool"
 )
 
 func Bytedance(output, saveFilename string, chanSize int, playAuthToken string) error {

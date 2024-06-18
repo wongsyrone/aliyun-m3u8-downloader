@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/log"
+	"github.com/wongsyrone/aliyun-m3u8-downloader/pkg/log"
 	"k8s.io/klog/v2"
 )
 

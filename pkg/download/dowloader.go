@@ -16,13 +16,13 @@ import (
 	"github.com/yapingcat/gomedia/go-mp4"
 	"github.com/yapingcat/gomedia/go-mpeg2"
 
-	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/log"
+	"github.com/wongsyrone/aliyun-m3u8-downloader/pkg/log"
 	fluentffmpeg "github.com/modfy/fluent-ffmpeg"
 
 	"github.com/ddliu/go-httpclient"
-	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/parse"
-	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/parse/aliyun"
-	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/tool"
+	"github.com/wongsyrone/aliyun-m3u8-downloader/pkg/parse"
+	"github.com/wongsyrone/aliyun-m3u8-downloader/pkg/parse/aliyun"
+	"github.com/wongsyrone/aliyun-m3u8-downloader/pkg/tool"
 )
 
 type MergeTsType int

@@ -8,8 +8,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/log"
-	"github.com/lbbniu/aliyun-m3u8-downloader/pkg/tool"
+	"github.com/wongsyrone/aliyun-m3u8-downloader/pkg/log"
+	"github.com/wongsyrone/aliyun-m3u8-downloader/pkg/tool"
 )
 
 // rootCmd represents the base command when called without any subcommands

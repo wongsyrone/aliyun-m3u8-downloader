@@ -150,7 +150,7 @@ Use "aliyun-m3u8-downloader [command] --help" for more information about a comma
 
 ## 下载
 
-[二进制文件](https://github.com/lbbniu/aliyun-m3u8-downloader/releases)
+[二进制文件](https://github.com/wongsyrone/aliyun-m3u8-downloader/releases)
 
 ## 参考资料
 

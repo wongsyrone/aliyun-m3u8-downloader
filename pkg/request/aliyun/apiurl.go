@@ -96,7 +96,7 @@ func GetPlayInfoRequestUrl(rand, playAuth string, opts ...OptionFunc) (string, e
 	// 强制获取私有加密视频地址
 	//privateParams["PlayConfig"] = `{"EncryptType":"AliyunVoDEncryption"}`
 	privateParams["PlayConfig"] = "{}"
-	privateParams["PlayerVersion"] = "2.9.0"
+	privateParams["PlayerVersion"] = "2.20.3"
 	privateParams["ReAuthInfo"] = "{}"
 	privateParams["SecurityToken"], _ = sj.Get("SecurityToken").String()
 	privateParams["VideoId"] = opt.videoId
